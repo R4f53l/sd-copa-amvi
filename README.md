@@ -10,7 +10,7 @@ Sistema web para gestão do campeonato de futebol Copa AMVI.
 1. Clone o repositório:
 ```bash
 git clone <URL_DO_REPOSITORIO>
-cd copa-amvi
+cd sd-copa-amvi
 ```
 
 2. Crie e aplique as migrações do banco:
