@@ -1,21 +1,24 @@
-# Byte-compiled / cache do Python
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
-
-# Banco de dados local 
-*.sqlite3
-*.sqlite3-journal
-
-# Ambientes virtuais 
-venv/
 .venv/
-env/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
 
-# Arquivos do sistema e IDEs
-.vscode/
-.idea/
-.DS_Store
+# Environment / secrets
+.env
 
-# Logs
+# Django
+*.sqlite3
+media/
+staticfiles/
 *.log
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

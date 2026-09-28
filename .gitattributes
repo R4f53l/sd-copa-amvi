@@ -1,0 +1,7 @@
+# Same line endings on every OS (the server runs Linux).
+* text=auto eol=lf
+
+*.mo binary
+*.png binary
+*.jpg binary
+*.pdf binary

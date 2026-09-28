@@ -1,0 +1,746 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: copa-amvi\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: apps/accounts/models.py:17 apps/matches/models.py:194
+#: apps/matches/models.py:455
+msgid "role"
+msgstr "papel"
+
+#: apps/accounts/models.py:23
+msgid "phone"
+msgstr "telefone"
+
+#: apps/accounts/models.py:26
+msgid "user"
+msgstr "usuário"
+
+#: apps/accounts/models.py:27
+msgid "users"
+msgstr "usuários"
+
+#: apps/accounts/models.py:13
+msgid "Administrator"
+msgstr "Administrador"
+
+#: apps/accounts/models.py:14
+msgid "Table official"
+msgstr "Mesário"
+
+#: apps/championships/models.py:17 apps/matches/models.py:265
+#: apps/matches/models.py:308 apps/teams/models.py:14 apps/teams/models.py:33
+#: apps/teams/models.py:67
+msgid "name"
+msgstr "nome"
+
+#: apps/championships/models.py:19
+msgid "season"
+msgstr "temporada"
+
+#: apps/championships/models.py:21 apps/teams/models.py:16
+#: apps/teams/models.py:73
+msgid "slug"
+msgstr "slug (URL)"
+
+#: apps/championships/models.py:22 apps/matches/models.py:374
+msgid "description"
+msgstr "descrição"
+
+#: apps/championships/models.py:24
+msgid "regulation"
+msgstr "regulamento"
+
+#: apps/championships/models.py:29
+msgid "regulation file"
+msgstr "arquivo do regulamento"
+
+#: apps/championships/models.py:35 apps/championships/models.py:202
+#: apps/matches/models.py:83
+msgid "status"
+msgstr "situação"
+
+#: apps/championships/models.py:41
+msgid "start date"
+msgstr "data de início"
+
+#: apps/championships/models.py:42
+msgid "end date"
+msgstr "data de término"
+
+#: apps/championships/models.py:46
+msgid "points per win"
+msgstr "pontos por vitória"
+
+#: apps/championships/models.py:49
+msgid "points per draw"
+msgstr "pontos por empate"
+
+#: apps/championships/models.py:52
+msgid "points per loss"
+msgstr "pontos por derrota"
+
+#: apps/championships/models.py:57
+msgid "yellow cards for suspension"
+msgstr "cartões amarelos para suspensão"
+
+#: apps/championships/models.py:60
+msgid "max players per team"
+msgstr "máximo de jogadores por time"
+
+#: apps/championships/models.py:71 apps/championships/models.py:108
+#: apps/matches/models.py:43
+msgid "championship"
+msgstr "campeonato"
+
+#: apps/championships/models.py:72
+msgid "championships"
+msgstr "campeonatos"
+
+#: apps/championships/models.py:117
+msgid "group"
+msgstr "grupo"
+
+#: apps/championships/models.py:122
+msgid "withdrawn"
+msgstr "desistente"
+
+#: apps/championships/models.py:125
+msgid "played"
+msgstr "jogos"
+
+#: apps/championships/models.py:126
+msgid "wins"
+msgstr "vitórias"
+
+#: apps/championships/models.py:127
+msgid "draws"
+msgstr "empates"
+
+#: apps/championships/models.py:128
+msgid "losses"
+msgstr "derrotas"
+
+#: apps/championships/models.py:129
+msgid "goals for"
+msgstr "gols pró"
+
+#: apps/championships/models.py:131
+msgid "goals against"
+msgstr "gols contra"
+
+#: apps/championships/models.py:134
+msgid "points"
+msgstr "pontos"
+
+#: apps/championships/models.py:139
+msgid "points deducted"
+msgstr "pontos descontados"
+
+#: apps/championships/models.py:143
+msgid "yellow cards"
+msgstr "cartões amarelos"
+
+#: apps/championships/models.py:145
+msgid "red cards"
+msgstr "cartões vermelhos"
+
+#: apps/championships/models.py:147
+msgid "rank"
+msgstr "posição"
+
+#: apps/championships/models.py:154 apps/championships/models.py:190
+msgid "championship team"
+msgstr "time no campeonato"
+
+#: apps/championships/models.py:155
+msgid "championship teams"
+msgstr "times no campeonato"
+
+#: apps/championships/models.py:199 apps/matches/models.py:198
+msgid "shirt number"
+msgstr "número da camisa"
+
+#: apps/championships/models.py:208
+msgid "registered on"
+msgstr "inscrito em"
+
+#: apps/championships/models.py:209
+msgid "released on"
+msgstr "desligado em"
+
+#: apps/championships/models.py:212
+msgid "player registration"
+msgstr "inscrição de jogador"
+
+#: apps/championships/models.py:213
+msgid "player registrations"
+msgstr "inscrições de jogadores"
+
+#: apps/championships/models.py:11
+msgid "Draft"
+msgstr "Rascunho"
+
+#: apps/championships/models.py:12
+msgid "Registration open"
+msgstr "Inscrições abertas"
+
+#: apps/championships/models.py:13
+msgid "Ongoing"
+msgstr "Em andamento"
+
+#: apps/championships/models.py:14 apps/matches/models.py:27
+msgid "Finished"
+msgstr "Encerrado"
+
+#: apps/championships/models.py:15 apps/matches/models.py:29
+msgid "Canceled"
+msgstr "Cancelado"
+
+#: apps/championships/models.py:19
+msgid "e.g. 2026"
+msgstr "ex.: 2026"
+
+#: apps/championships/models.py:26
+msgid "Full text of the competition rules."
+msgstr "Texto completo do regulamento."
+
+#: apps/championships/models.py:32
+msgid "Official rules document (PDF)."
+msgstr "Documento oficial do regulamento (PDF)."
+
+#: apps/championships/models.py:67 apps/teams/models.py:110
+msgid "teams"
+msgstr "times"
+
+#: apps/championships/models.py:114 apps/matches/models.py:185
+#: apps/matches/models.py:360 apps/teams/models.py:109
+msgid "team"
+msgstr "time"
+
+#: apps/championships/models.py:120
+msgid "Group label, e.g. 'A'."
+msgstr "Identificação do grupo, ex.: 'A'."
+
+#: apps/championships/models.py:136
+msgid "May go negative after point deductions."
+msgstr "Pode ficar negativo após perda de pontos."
+
+#: apps/championships/models.py:150
+msgid "Final position within the group after tie-breakers."
+msgstr "Posição final no grupo após os critérios de desempate."
+
+#: apps/championships/models.py:182
+msgid "Active"
+msgstr "Ativo"
+
+#: apps/championships/models.py:183
+msgid "Suspended"
+msgstr "Suspenso"
+
+#: apps/championships/models.py:184
+msgid "Released"
+msgstr "Desligado"
+
+#: apps/championships/models.py:196 apps/matches/models.py:191
+#: apps/matches/models.py:449 apps/teams/models.py:167
+msgid "player"
+msgstr "jogador"
+
+#: apps/championships/models.py:253
+msgid ""
+"This player is already registered for another team in this championship."
+msgstr "Este jogador já está inscrito em outro time neste campeonato."
+
+#: apps/matches/models.py:76
+msgid "stage"
+msgstr "fase"
+
+#: apps/matches/models.py:79
+msgid "round"
+msgstr "rodada"
+
+#: apps/matches/models.py:81
+msgid "scheduled at"
+msgstr "data e horário"
+
+#: apps/matches/models.py:89
+msgid "referee"
+msgstr "árbitro"
+
+#: apps/matches/models.py:91
+msgid "streaming link"
+msgstr "link da transmissão"
+
+#: apps/matches/models.py:98
+msgid "home score"
+msgstr "gols do mandante"
+
+#: apps/matches/models.py:99
+msgid "away score"
+msgstr "gols do visitante"
+
+#: apps/matches/models.py:101
+msgid "home penalty score"
+msgstr "pênaltis do mandante"
+
+#: apps/matches/models.py:104
+msgid "away penalty score"
+msgstr "pênaltis do visitante"
+
+#: apps/matches/models.py:106
+msgid "walkover"
+msgstr "W.O."
+
+#: apps/matches/models.py:108
+msgid "started at"
+msgstr "iniciado em"
+
+#: apps/matches/models.py:110
+msgid "finished at"
+msgstr "encerrado em"
+
+#: apps/matches/models.py:112
+msgid "notes"
+msgstr "observações"
+
+#: apps/matches/models.py:115 apps/matches/models.py:179
+#: apps/matches/models.py:346
+msgid "match"
+msgstr "jogo"
+
+#: apps/matches/models.py:116
+msgid "matches"
+msgstr "jogos"
+
+#: apps/matches/models.py:201 apps/teams/models.py:153
+msgid "position"
+msgstr "posição"
+
+#: apps/matches/models.py:206
+msgid "captain"
+msgstr "capitão"
+
+#: apps/matches/models.py:209
+msgid "lineup entry"
+msgstr "escalação"
+
+#: apps/matches/models.py:210
+msgid "lineup entries"
+msgstr "escalações"
+
+#: apps/matches/models.py:260 apps/matches/models.py:307
+msgid "code"
+msgstr "código"
+
+#: apps/matches/models.py:267
+msgid "category"
+msgstr "categoria"
+
+#: apps/matches/models.py:270
+msgid "score effect"
+msgstr "efeito no placar"
+
+#: apps/matches/models.py:276
+msgid "counts as yellow card"
+msgstr "conta como cartão amarelo"
+
+#: apps/matches/models.py:279
+msgid "counts as red card"
+msgstr "conta como cartão vermelho"
+
+#: apps/matches/models.py:282
+msgid "requires team"
+msgstr "exige time"
+
+#: apps/matches/models.py:286
+msgid "icon"
+msgstr "ícone"
+
+#: apps/matches/models.py:288
+msgid "display order"
+msgstr "ordem de exibição"
+
+#: apps/matches/models.py:290 apps/teams/models.py:50 apps/teams/models.py:106
+#: apps/teams/models.py:164
+msgid "active"
+msgstr "ativo"
+
+#: apps/matches/models.py:293 apps/matches/models.py:352
+msgid "event type"
+msgstr "tipo de evento"
+
+#: apps/matches/models.py:294 apps/matches/models.py:313
+msgid "event types"
+msgstr "tipos de evento"
+
+#: apps/matches/models.py:318
+msgid "event role"
+msgstr "papel no evento"
+
+#: apps/matches/models.py:319
+msgid "event roles"
+msgstr "papéis no evento"
+
+#: apps/matches/models.py:363
+msgid "period"
+msgstr "tempo de jogo"
+
+#: apps/matches/models.py:366
+msgid "minute"
+msgstr "minuto"
+
+#: apps/matches/models.py:369
+msgid "stoppage time"
+msgstr "acréscimo"
+
+#: apps/matches/models.py:384
+msgid "canceled"
+msgstr "cancelado"
+
+#: apps/matches/models.py:394
+msgid "canceled at"
+msgstr "cancelado em"
+
+#: apps/matches/models.py:397
+msgid "cancellation reason"
+msgstr "motivo do cancelamento"
+
+#: apps/matches/models.py:408
+msgid "match event"
+msgstr "evento do jogo"
+
+#: apps/matches/models.py:409
+msgid "match events"
+msgstr "eventos do jogo"
+
+#: apps/matches/models.py:459
+msgid "event participant"
+msgstr "participante do evento"
+
+#: apps/matches/models.py:460
+msgid "event participants"
+msgstr "participantes do evento"
+
+#: apps/matches/models.py:13
+msgid "Group stage"
+msgstr "Fase de grupos"
+
+#: apps/matches/models.py:14
+msgid "Round of 16"
+msgstr "Oitavas de final"
+
+#: apps/matches/models.py:15
+msgid "Quarter-final"
+msgstr "Quartas de final"
+
+#: apps/matches/models.py:16
+msgid "Semi-final"
+msgstr "Semifinal"
+
+#: apps/matches/models.py:17
+msgid "Third-place play-off"
+msgstr "Disputa de 3º lugar"
+
+#: apps/matches/models.py:18
+msgid "Final"
+msgstr "Final"
+
+#: apps/matches/models.py:21
+msgid "Scheduled"
+msgstr "Agendado"
+
+#: apps/matches/models.py:22 apps/matches/models.py:336
+msgid "First half"
+msgstr "1º tempo"
+
+#: apps/matches/models.py:23
+msgid "Half-time"
+msgstr "Intervalo"
+
+#: apps/matches/models.py:24 apps/matches/models.py:337
+msgid "Second half"
+msgstr "2º tempo"
+
+#: apps/matches/models.py:25
+msgid "Extra time"
+msgstr "Prorrogação"
+
+#: apps/matches/models.py:26 apps/matches/models.py:255
+#: apps/matches/models.py:340
+msgid "Penalty shoot-out"
+msgstr "Disputa de pênaltis"
+
+#: apps/matches/models.py:28
+msgid "Postponed"
+msgstr "Adiado"
+
+#: apps/matches/models.py:51
+msgid "home team"
+msgstr "mandante"
+
+#: apps/matches/models.py:57
+msgid "away team"
+msgstr "visitante"
+
+#: apps/matches/models.py:65 apps/teams/models.py:53
+msgid "stadium"
+msgstr "estádio"
+
+#: apps/matches/models.py:71
+msgid "table officials"
+msgstr "mesários"
+
+#: apps/matches/models.py:72
+msgid "Users allowed to record events for this match."
+msgstr "Usuários autorizados a registrar eventos neste jogo."
+
+#: apps/matches/models.py:93
+msgid "Live broadcast link (e.g. YouTube), when available."
+msgstr "Link da transmissão ao vivo (ex.: YouTube), quando disponível."
+
+#: apps/matches/models.py:172
+msgid "Starter"
+msgstr "Titular"
+
+#: apps/matches/models.py:173
+msgid "Substitute"
+msgstr "Reserva"
+
+#: apps/matches/models.py:247
+msgid "Does not change the score"
+msgstr "Não altera o placar"
+
+#: apps/matches/models.py:248
+msgid "Goal for the event's team"
+msgstr "Gol para o time do evento"
+
+#: apps/matches/models.py:249
+msgid "Goal for the opponent (own goal)"
+msgstr "Gol para o adversário (gol contra)"
+
+#: apps/matches/models.py:252
+msgid "Scoring"
+msgstr "Gols"
+
+#: apps/matches/models.py:253
+msgid "Disciplinary"
+msgstr "Disciplinar"
+
+#: apps/matches/models.py:254
+msgid "Substitution"
+msgstr "Substituição"
+
+#: apps/matches/models.py:256
+msgid "Match flow"
+msgstr "Andamento do jogo"
+
+#: apps/matches/models.py:257
+msgid "Other"
+msgstr "Outro"
+
+#: apps/matches/models.py:263
+msgid "e.g. 'goal', 'yellow-card'."
+msgstr "ex.: 'goal', 'yellow-card'."
+
+#: apps/matches/models.py:284
+msgid "False for events such as kick-off or full-time."
+msgstr "Desmarque para eventos como início ou fim de jogo."
+
+#: apps/matches/models.py:314
+msgid "Event types in which this role may appear."
+msgstr "Tipos de evento em que este papel pode aparecer."
+
+#: apps/matches/models.py:338
+msgid "Extra time - first half"
+msgstr "Prorrogação - 1º tempo"
+
+#: apps/matches/models.py:339
+msgid "Extra time - second half"
+msgstr "Prorrogação - 2º tempo"
+
+#: apps/matches/models.py:366
+msgid "Regular-time minute, e.g. 45."
+msgstr "Minuto do tempo regulamentar, ex.: 45."
+
+#: apps/matches/models.py:371
+msgid "Added time, e.g. 2 for 45+2."
+msgstr "Acréscimo, ex.: 2 para 45+2."
+
+#: apps/matches/models.py:382
+msgid "recorded by"
+msgstr "registrado por"
+
+#: apps/matches/models.py:391
+msgid "canceled by"
+msgstr "cancelado por"
+
+#: apps/matches/models.py:404 apps/teams/models.py:168
+msgid "players"
+msgstr "jogadores"
+
+#: apps/matches/models.py:443
+msgid "event"
+msgstr "evento"
+
+#: apps/matches/models.py:231 apps/matches/models.py:433
+msgid "Team is not playing this match."
+msgstr "Este time não participa deste jogo."
+
+#: apps/matches/models.py:236
+msgid "Player is not registered for this team."
+msgstr "O jogador não está inscrito neste time."
+
+#: apps/matches/models.py:429
+msgid "This event type requires a team."
+msgstr "Este tipo de evento exige um time."
+
+#: apps/matches/models.py:481
+#, python-format
+msgid "Role '%(role)s' is not valid for event type '%(type)s'."
+msgstr "O papel '%(role)s' não é válido para o tipo de evento '%(type)s'."
+
+#: apps/matches/models.py:488
+msgid "Player is not on the match sheet for this match."
+msgstr "O jogador não está na súmula deste jogo."
+
+#: apps/matches/models.py:160
+msgid "Both teams must be enrolled in the match's championship."
+msgstr "Os dois times devem estar inscritos no campeonato do jogo."
+
+#: apps/shared/models.py:14
+msgid "created at"
+msgstr "criado em"
+
+#: apps/shared/models.py:15
+msgid "updated at"
+msgstr "atualizado em"
+
+#: apps/teams/models.py:15
+msgid "state"
+msgstr "UF"
+
+#: apps/teams/models.py:19 apps/teams/models.py:38 apps/teams/models.py:78
+msgid "city"
+msgstr "cidade"
+
+#: apps/teams/models.py:20
+msgid "cities"
+msgstr "cidades"
+
+#: apps/teams/models.py:40
+msgid "address"
+msgstr "endereço"
+
+#: apps/teams/models.py:42
+msgid "capacity"
+msgstr "capacidade"
+
+#: apps/teams/models.py:45
+msgid "latitude"
+msgstr "latitude"
+
+#: apps/teams/models.py:48
+msgid "longitude"
+msgstr "longitude"
+
+#: apps/teams/models.py:54
+msgid "stadiums"
+msgstr "estádios"
+
+#: apps/teams/models.py:69
+msgid "short name"
+msgstr "sigla"
+
+#: apps/teams/models.py:81
+msgid "crest"
+msgstr "escudo"
+
+#: apps/teams/models.py:84
+msgid "primary colour"
+msgstr "cor principal"
+
+#: apps/teams/models.py:90
+msgid "secondary colour"
+msgstr "cor secundária"
+
+#: apps/teams/models.py:93
+msgid "founded in"
+msgstr "ano de fundação"
+
+#: apps/teams/models.py:135
+msgid "full name"
+msgstr "nome completo"
+
+#: apps/teams/models.py:137
+msgid "nickname"
+msgstr "apelido"
+
+#: apps/teams/models.py:143
+msgid "document number"
+msgstr "número do documento"
+
+#: apps/teams/models.py:151
+msgid "birth date"
+msgstr "data de nascimento"
+
+#: apps/teams/models.py:156
+msgid "preferred foot"
+msgstr "pé preferido"
+
+#: apps/teams/models.py:162
+msgid "photo"
+msgstr "foto"
+
+#: apps/teams/models.py:71
+msgid "Abbreviation shown on the scoreboard."
+msgstr "Abreviação exibida no placar."
+
+#: apps/teams/models.py:87
+msgid "Hex colour, e.g. #1A2B3C."
+msgstr "Cor em hexadecimal, ex.: #1A2B3C."
+
+#: apps/teams/models.py:104
+msgid "home stadium"
+msgstr "estádio da casa"
+
+#: apps/teams/models.py:125
+msgid "Goalkeeper"
+msgstr "Goleiro"
+
+#: apps/teams/models.py:126
+msgid "Defender"
+msgstr "Defensor"
+
+#: apps/teams/models.py:127
+msgid "Midfielder"
+msgstr "Meio-campista"
+
+#: apps/teams/models.py:128
+msgid "Forward"
+msgstr "Atacante"
+
+#: apps/teams/models.py:131
+msgid "Left"
+msgstr "Esquerdo"
+
+#: apps/teams/models.py:132
+msgid "Right"
+msgstr "Direito"
+
+#: apps/teams/models.py:133
+msgid "Both"
+msgstr "Ambos"
+
+#: apps/teams/models.py:140
+msgid "Name shown in live feeds."
+msgstr "Nome exibido nos lances ao vivo."
+
+#: apps/teams/models.py:148
+msgid "Official ID (e.g. CPF) used to prevent duplicate registrations."
+msgstr "Documento oficial (ex.: CPF), usado para evitar cadastros duplicados."
