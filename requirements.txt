@@ -1,2 +1,19 @@
-Django>=5.0,<6.0
-psycopg2-binary>=2.9.9
+# Core
+Django>=6.1,<6.2
+djangorestframework>=3.18,<3.19
+djangorestframework-simplejwt>=5.5,<6.0
+django-filter>=26.1
+django-cors-headers>=4.9,<5.0
+drf-spectacular>=0.30,<0.31
+
+# Real time
+channels>=4.3,<5.0
+channels-redis>=4.3,<5.0
+daphne>=4.2,<5.0
+
+# Database
+psycopg[binary]>=3.3,<4.0
+
+# Configuration / media
+django-environ>=0.14
+Pillow>=12.0

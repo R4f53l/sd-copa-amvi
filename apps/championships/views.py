@@ -1,0 +1,1 @@
+"""Server-rendered views (Django templates) for the championships app."""

@@ -1,0 +1,27 @@
+[project]
+name = "copa-amvi"
+version = "0.2.0"
+description = "Sistema web do campeonato regional de futebol Copa AMVI (Piauí)."
+readme = "README.md"
+requires-python = ">=3.12"
+
+# Dependencies are pinned in requirements.txt / requirements-dev.txt.
+
+[tool.ruff]
+line-length = 79
+target-version = "py312"
+extend-exclude = ["**/migrations/*"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # import sorting
+    "B",    # bugbear
+    "UP",   # pyupgrade
+    "DJ",   # flake8-django
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["apps", "config"]
