@@ -59,10 +59,10 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Admin de `ChampionshipTeam` com as inscrições de jogadores como inline e a classificação só para leitura
 
 **Dev 4**
-- [ ] Admin de `Match` com escalação (`Lineup`) e eventos (`MatchEvent`) como inlines
-- [ ] Admin de `MatchEvent` com os participantes como inline
-- [ ] Admin de `EventType` e `EventRole`
-- [ ] Comando `seed_demo` com cidades do PI, times e jogadores de exemplo
+- [x] Admin de `Match` com escalação (`Lineup`) e eventos (`MatchEvent`) como inlines
+- [x] Admin de `MatchEvent` com os participantes como inline
+- [x] Admin de `EventType` e `EventRole`
+- [x] Comando `seed_demo` com cidades do PI, times e jogadores de exemplo
 
 **Todos:** usar `list_select_related` nas listas cujo `__str__` acessa outras tabelas (`Match`, `Lineup`, `PlayerRegistration`), para evitar uma consulta por linha.
 
