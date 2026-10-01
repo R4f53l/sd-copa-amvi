@@ -21,6 +21,7 @@ from apps.matches.models import (
 )
 from apps.teams.models import City, Player, Stadium, Team
 
+#para exec python manage.py database_seeding
 
 class Command(BaseCommand):
     help = "Cria dados fictícios, incluindo eventos de partidas."
