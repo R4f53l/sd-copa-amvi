@@ -51,8 +51,8 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Customizar o `UserAdmin`: fieldsets com o papel e filtro por papel
 
 **Dev 2**
-- [ ] Admin de `City`, `Stadium`, `Team` e `Player`: `list_display`, busca e filtros
-- [ ] Fieldsets e prévia do escudo e da foto
+- [x] Admin de `City`, `Stadium`, `Team` e `Player`: `list_display`, busca e filtros
+- [x] Fieldsets e prévia do escudo e da foto
 
 **Dev 3**
 - [x] Admin de `Championship` com os times inscritos (`ChampionshipTeam`) como inline e fieldsets Geral / Regulamento / Regras

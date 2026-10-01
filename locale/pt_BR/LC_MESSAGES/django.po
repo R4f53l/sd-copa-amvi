@@ -744,3 +744,27 @@ msgstr "Nome exibido nos lances ao vivo."
 #: apps/teams/models.py:148
 msgid "Official ID (e.g. CPF) used to prevent duplicate registrations."
 msgstr "Documento oficial (ex.: CPF), usado para evitar cadastros duplicados."
+
+#: apps/teams/admin.py
+msgid "Location"
+msgstr "Localização"
+
+#: apps/teams/admin.py
+msgid "Used to show the weather forecast for matches."
+msgstr "Usada para exibir a previsão do tempo dos jogos."
+
+#: apps/teams/admin.py
+msgid "Identity"
+msgstr "Identidade"
+
+#: apps/teams/admin.py
+msgid "preview"
+msgstr "pré-visualização"
+
+#: apps/teams/admin.py
+msgid "Personal data"
+msgstr "Dados pessoais"
+
+#: apps/teams/admin.py
+msgid "On the pitch"
+msgstr "Em campo"
