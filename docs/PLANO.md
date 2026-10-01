@@ -55,8 +55,8 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Fieldsets e prévia do escudo e da foto
 
 **Dev 3**
-- [ ] Admin de `Championship` com os times inscritos (`ChampionshipTeam`) como inline e fieldsets Geral / Regulamento / Regras
-- [ ] Admin de `ChampionshipTeam` com as inscrições de jogadores como inline e a classificação só para leitura
+- [x] Admin de `Championship` com os times inscritos (`ChampionshipTeam`) como inline e fieldsets Geral / Regulamento / Regras
+- [x] Admin de `ChampionshipTeam` com as inscrições de jogadores como inline e a classificação só para leitura
 
 **Dev 4**
 - [x] Admin de `Match` com escalação (`Lineup`) e eventos (`MatchEvent`) como inlines
