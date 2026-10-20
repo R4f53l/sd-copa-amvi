@@ -1,78 +1,96 @@
-{% load i18n %}
+{% load i18n static %}
+{% get_current_language as LANGUAGE_CODE %}
 <!doctype html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{% translate "Copa AMVI" %}{% endblock %}</title>
-  <style>
-    :root {
-      color-scheme: light;
-      font-family: system-ui, sans-serif;
-      color: #17251d;
-      background: #f3f6f3;
-    }
-    body { margin: 0; }
-    header {
-      padding: 1rem max(1.5rem, calc((100% - 68rem) / 2));
-      color: #fff;
-      background: #14532d;
-    }
-    header a { color: inherit; text-decoration: none; }
-    nav { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: .75rem; }
-    main { max-width: 68rem; margin: 3rem auto; padding: 0 1.5rem; }
-    .messages { display: grid; gap: .5rem; margin-bottom: 1rem; padding: 0; list-style: none; }
-    .message { padding: .85rem 1rem; border-radius: .5rem; background: #e4efe7; }
-    .message.error { color: #7f1d1d; background: #fee2e2; }
-    .message.warning { color: #713f12; background: #fef3c7; }
-    .message.success { color: #14532d; background: #dcfce7; }
-    .panel {
-      padding: clamp(2rem, 6vw, 4rem);
-      border-radius: 1rem;
-      background: #fff;
-      box-shadow: 0 1rem 2.5rem #17251d12;
-    }
-    .panel p { max-width: 42rem; line-height: 1.7; }
-    .button {
-      display: inline-block;
-      padding: .75rem 1rem;
-      border-radius: .5rem;
-      color: #fff;
-      background: #166534;
-      text-decoration: none;
-    }
-    .button:hover { background: #14532d; }
-    .section { margin-top: 2rem; }
-    .match-list { display: grid; gap: 1rem; padding: 0; list-style: none; }
-    .match-card { padding: 1rem; border: 1px solid #dbe4dc; border-radius: .75rem; background: #fff; }
-    .match-card h2 { margin: 0 0 .5rem; font-size: 1.1rem; }
-    .match-meta { color: #526157; font-size: .9rem; }
-    .filters { display: flex; flex-wrap: wrap; align-items: end; gap: 1rem; }
-    .filters label { display: grid; gap: .35rem; }
-    .filters select { min-width: 10rem; padding: .6rem; border: 1px solid #aab8ad; border-radius: .4rem; }
-    .pagination { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
-    footer { max-width: 68rem; margin: 0 auto; padding: 1rem 1.5rem 2rem; color: #526157; }
-  </style>
+  <meta name="theme-color" content="#0a4f2b">
+  <title>{% block title %}Copa AMVI{% endblock %} · Copa AMVI</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
-  <header>
-    <a href="/"><strong>{% translate "Copa AMVI" %}</strong></a>
-    <nav aria-label="{% translate 'Main navigation' %}">
-      <a href="{% url 'matches:list' %}">{% translate "Matches" %}</a>
-      <a href="{% url 'swagger-ui' %}">{% translate "API documentation" %}</a>
-      <a href="{% url 'admin:index' %}">{% translate "Administration" %}</a>
-    </nav>
-  </header>
-  <main>
-    {% if messages %}
-      <ul class="messages" aria-live="polite">
-        {% for message in messages %}
-          <li class="message {{ message.tags }}">{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
+  {% with section=request.resolver_match.namespace %}
+  <nav class="navbar navbar-expand-md navbar-dark amvi-navbar mb-4">
+    <div class="container">
+      <a class="navbar-brand amvi-brand" href="{% if user.is_authenticated %}{% url 'matches:panel' %}{% else %}/{% endif %}">
+        <span class="amvi-brand-mark" aria-hidden="true">⚽</span> Copa AMVI
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav"
+              aria-controls="main-nav" aria-expanded="false" aria-label="{% translate 'Menu' %}">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="main-nav">
+        <ul class="navbar-nav me-auto">
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link{% if section == 'matches' %} active{% endif %}"{% if section == 'matches' %} aria-current="page"{% endif %}
+                 href="{% url 'matches:panel' %}">{% translate "Matches" %}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if section == 'championships' %} active{% endif %}"{% if section == 'championships' %} aria-current="page"{% endif %}
+                 href="{% url 'championships:list' %}">{% translate "Championships" %}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if section == 'teams' %} active{% endif %}"{% if section == 'teams' %} aria-current="page"{% endif %}
+                 href="{% url 'teams:team_list' %}">{% translate "Teams" %}</a>
+            </li>
+            {% if user.is_staff %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">{% translate "Admin" %}</a></li>
+            {% endif %}
+          {% endif %}
+        </ul>
+        <div class="d-flex flex-wrap align-items-center gap-2 py-2 py-md-0">
+          <form action="{% url 'set_language' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <select name="language" class="form-select form-select-sm bg-transparent text-white border-light-subtle"
+                    onchange="this.form.submit()" aria-label="{% translate 'Language' %}">
+              {% get_available_languages as LANGUAGES %}
+              {% for code, name in LANGUAGES %}
+                <option class="text-body" value="{{ code }}"{% if code == LANGUAGE_CODE %} selected{% endif %}>{{ name }}</option>
+              {% endfor %}
+            </select>
+          </form>
+          {% if user.is_authenticated %}
+            <span class="navbar-text text-white small d-none d-lg-inline">
+              {{ user }}
+              <span class="badge rounded-pill text-bg-light ms-1">{% if user.is_admin %}{% translate "Administrator" %}{% else %}{% translate "Table official" %}{% endif %}</span>
+            </span>
+            <form action="{% url 'accounts:logout' %}" method="post">
+              {% csrf_token %}
+              <button class="btn btn-sm btn-outline-light" type="submit">{% translate "Log out" %}</button>
+            </form>
+          {% elif section != 'accounts' %}
+            <a class="btn btn-sm btn-light" href="{% url 'accounts:login' %}">{% translate "Log in" %}</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+  {% endwith %}
+
+  <main class="container pb-5">
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% translate 'Close' %}"></button>
+      </div>
+    {% endfor %}
+
     {% block content %}{% endblock %}
   </main>
-  <footer>{% translate "Regional football championship of AMVI." %}</footer>
+
+  <footer class="amvi-footer border-top py-3">
+    <div class="container d-flex justify-content-between">
+      <span>Copa AMVI</span>
+      <span>{% now "Y" %}</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  {% block extra_js %}{% endblock %}
 </body>
 </html>

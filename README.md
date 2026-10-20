@@ -33,12 +33,20 @@ Sistema web do campeonato regional de futebol Copa AMVI, disputado por cidades d
 - **Modelagem completa dos 4 domínios**, com migrations iniciais geradas (detalhes abaixo).
 - **Catálogo de eventos inicial**: a migration `matches/0002` cadastra os tipos e papéis de evento da súmula (veja [Catálogo de eventos](#catálogo-de-eventos)).
 
+- **Painel de jogos** (`/matches/`, exige login):
+  - calendário agrupado por campeonato e rodada, com filtros e paginação; administradores veem todos os jogos, mesários só os designados a eles;
+  - cadastro e edição de jogos (só administradores), com validação de times do campeonato, mandante ≠ visitante e data dentro do período do campeonato;
+  - escalação por time: entre 7 e 11 titulares, reservas, um capitão, números de camisa únicos e só jogadores com inscrição ativa;
+  - súmula: registro de eventos com os campos de jogador conforme o tipo (autor, assistência, entra/sai…), cancelamento com motivo e **placar recalculado automaticamente**, incluindo a disputa de pênaltis;
+  - as regras ficam em `apps/matches/services.py`, para a API reutilizar.
+- **Login por sessão** (`/accounts/login/`) e `templates/base.html` mínimos, criados para o painel funcionar. Recuperação de senha e layout definitivo continuam com os donos dessas tarefas no plano.
+
 ### 🚧 Ainda não implementado
 
 O cronograma completo, com as tarefas semanais de cada dev, está em [`docs/PLANO.md`](docs/PLANO.md).
 
-- Páginas (views, formulários e templates): login, recuperação de senha, cadastros, súmula e páginas do portal público. A página inicial e o layout base já estão disponíveis.
-- O portal público inclui calendário/resultados em `/matches/`, com filtros por rodada e cidade e paginação.
+- Páginas ainda pendentes (views, formulários e templates): recuperação de senha e cadastros de times e campeonatos.
+- O portal público inclui calendário/resultados em `/matches/`, com filtros por rodada e cidade e paginação. O painel autenticado fica em `/matches/panel/`.
 - Serializers, viewsets e permissões por papel (admin / mesário). Os routers da API estão vazios.
 - Camada de serviço (`apps/matches/services.py`) que, ao registrar um evento, deve:
   - atualizar o placar de `Match`;

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Edit registration" %} · {{ object.player.display_name }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb small">
+    <li class="breadcrumb-item"><a href="{% url 'championships:list' %}">{% translate "Championships" %}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'championships:detail' championship.pk %}">{{ championship }}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'championships:roster' championship.pk entry.pk %}">{{ entry.team.name }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ object.player.display_name }}</li>
+  </ol>
+</nav>
+
+<div class="page-header mb-3">
+  <h1 class="h3 mb-0">{% translate "Edit registration" %} · {{ object.player.display_name }}</h1>
+  <p class="text-body-secondary small mb-0">{{ entry.team.name }} · {{ championship }}</p>
+</div>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% include "includes/form_errors.html" %}
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12">{% include "includes/field.html" with field=form.player %}</div>
+            <div class="col-md-6">{% include "includes/field.html" with field=form.shirt_number %}</div>
+            <div class="col-md-6">{% include "includes/field.html" with field=form.status %}</div>
+            <div class="col-md-6">{% include "includes/field.html" with field=form.registered_on %}</div>
+            <div class="col-md-6">{% include "includes/field.html" with field=form.released_on %}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="d-grid gap-2">
+        <button class="btn btn-primary btn-lg" type="submit">✔ {% translate "Save" %}</button>
+        <a class="btn btn-outline-secondary" href="{% url 'championships:roster' championship.pk entry.pk %}">{% translate "Cancel" %}</a>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}

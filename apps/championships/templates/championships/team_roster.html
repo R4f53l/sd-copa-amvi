@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% load i18n teams_tags %}
+
+{% block title %}{% translate "Players" %} · {{ entry.team.name }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb small">
+    <li class="breadcrumb-item"><a href="{% url 'championships:list' %}">{% translate "Championships" %}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'championships:detail' championship.pk %}">{{ championship }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ entry.team.name }}</li>
+  </ol>
+</nav>
+
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+  <div class="d-flex align-items-center gap-3">
+    {% team_badge entry.team size="3rem" %}
+    <div>
+      <h1 class="h3 mb-0">{{ entry.team.name }}</h1>
+      <p class="text-body-secondary small mb-0">
+        🏆 {{ championship }} · {{ active_count }} / {{ max_players }} {% translate "active players" %}
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  {% if can_manage and form %}
+    <div class="col-lg-4 order-lg-2">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h5 fw-bold mb-3">{% translate "Register player" %}</h2>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {% include "includes/form_errors.html" %}
+            {% include "includes/field.html" with field=form.player %}
+            <div class="row">
+              <div class="col-6">{% include "includes/field.html" with field=form.shirt_number %}</div>
+              <div class="col-6">{% include "includes/field.html" with field=form.status %}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">{% include "includes/field.html" with field=form.registered_on %}</div>
+              <div class="col-6">{% include "includes/field.html" with field=form.released_on %}</div>
+            </div>
+            <div class="d-grid">
+              <button class="btn btn-primary" type="submit">✔ {% translate "Register player" %}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="{% if can_manage and form %}col-lg-8 order-lg-1{% else %}col-12{% endif %}">
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead class="table-light small">
+            <tr>
+              <th style="width: 4.5rem">#</th>
+              <th>{% translate "player" as label %}{{ label|capfirst }}</th>
+              <th>{% translate "position" as label %}{{ label|capfirst }}</th>
+              <th>{% translate "status" as label %}{{ label|capfirst }}</th>
+              <th>{% translate "registered on" as label %}{{ label|capfirst }}</th>
+              {% if can_manage %}<th class="text-end"></th>{% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for reg in registrations %}
+              <tr{% if reg.status == "RELEASED" %} class="opacity-50"{% endif %}>
+                <td class="fw-bold">{% if reg.shirt_number %}#{{ reg.shirt_number }}{% else %}—{% endif %}</td>
+                <td>
+                  <div class="fw-semibold">{{ reg.player.display_name }}</div>
+                  {% if reg.player.nickname %}<div class="text-body-secondary small">{{ reg.player.full_name }}</div>{% endif %}
+                </td>
+                <td>{{ reg.player.get_position_display|default:"—" }}</td>
+                <td>
+                  <span class="status-pill {% if reg.status == 'ACTIVE' %}is-scheduled{% elif reg.status == 'SUSPENDED' %}is-live{% else %}is-finished{% endif %}">
+                    {{ reg.get_status_display }}
+                  </span>
+                </td>
+                <td>
+                  {{ reg.registered_on|date:"d/m/Y" }}
+                  {% if reg.released_on %}<div class="text-body-secondary small">→ {{ reg.released_on|date:"d/m/Y" }}</div>{% endif %}
+                </td>
+                {% if can_manage %}
+                  <td class="text-end">
+                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'championships:registration_update' championship.pk entry.pk reg.pk %}">
+                      ✏️ {% translate "Edit" %}
+                    </a>
+                  </td>
+                {% endif %}
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6" class="text-center text-body-secondary py-5">
+                  {% translate "This team has no registered players." %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

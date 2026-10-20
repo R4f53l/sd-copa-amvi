@@ -121,8 +121,9 @@ AUTH_USER_MODEL = "accounts.User"
 # The website (public portal and table official panel) uses session login.
 # JWT is only for external API clients.
 LOGIN_URL = "accounts:login"
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "matches:panel"
+# Back to the login page until the public home page exists (then "/").
+LOGOUT_REDIRECT_URL = "accounts:login"
 
 _PASSWORD_VALIDATION = "django.contrib.auth.password_validation"
 AUTH_PASSWORD_VALIDATORS = [

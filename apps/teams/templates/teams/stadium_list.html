@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load i18n humanize %}
+
+{% block title %}{% translate "Stadiums" %}{% endblock %}
+
+{% block content %}
+{% include "teams/_subnav.html" %}
+
+<div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-0">{% translate "Stadiums" %}</h1>
+    <p class="text-body-secondary mb-0 small">{% translate "Venues where championship matches are played." %}</p>
+  </div>
+  {% if can_manage %}
+    <a class="btn btn-primary" href="{% url 'teams:stadium_create' %}">+ {% translate "New stadium" %}</a>
+  {% endif %}
+</div>
+
+<form method="get" class="card card-body mb-4">
+  <div class="row g-2 align-items-end">
+    <div class="col-12 col-md-5">
+      <label class="form-label small fw-semibold" for="f-q">{% translate "Search" %}</label>
+      <input class="form-control" type="search" name="q" id="f-q" value="{{ search_query }}" placeholder="{% translate 'Search…' %}">
+    </div>
+    <div class="col-8 col-md-4">
+      <label class="form-label small fw-semibold" for="f-city">{% translate "city" %}</label>
+      <select class="form-select" name="city" id="f-city" onchange="this.form.submit()">
+        <option value="">{% translate "All" %}</option>
+        {% for city in cities %}
+          <option value="{{ city.pk }}"{% if filters.city == city.pk|stringformat:"s" %} selected{% endif %}>{{ city }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-4 col-md-3 d-flex gap-1">
+      <button class="btn btn-outline-primary flex-fill" type="submit">{% translate "Filter" %}</button>
+      {% if querystring %}
+        <a class="btn btn-link px-2" href="{% url 'teams:stadium_list' %}" title="{% translate 'Clear filters' %}" aria-label="{% translate 'Clear filters' %}">✕</a>
+      {% endif %}
+    </div>
+  </div>
+</form>
+
+<div class="card mb-4">
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead class="table-light small">
+        <tr>
+          <th>{% translate "name" as label %}{{ label|capfirst }}</th>
+          <th>{% translate "city" as label %}{{ label|capfirst }}</th>
+          <th>{% translate "capacity" as label %}{{ label|capfirst }}</th>
+          <th>{% translate "status" as label %}{{ label|capfirst }}</th>
+          {% if can_manage %}<th class="text-end"></th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for stadium in stadiums %}
+          <tr>
+            <td>
+              <div class="fw-semibold">{{ stadium.name }}</div>
+              {% if stadium.address %}<div class="text-body-secondary small">{{ stadium.address }}</div>{% endif %}
+            </td>
+            <td>{{ stadium.city }}</td>
+            <td>{{ stadium.capacity|intcomma|default:"—" }}</td>
+            <td>
+              {% if stadium.is_active %}
+                <span class="status-pill is-scheduled">{% translate "Active" %}</span>
+              {% else %}
+                <span class="status-pill is-finished">{% translate "Inactive" %}</span>
+              {% endif %}
+            </td>
+            {% if can_manage %}
+              <td class="text-end">
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'teams:stadium_update' stadium.pk %}">✏️ {% translate "Edit" %}</a>
+              </td>
+            {% endif %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-body-secondary py-5">{% translate "No stadiums found." %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% include "includes/pagination.html" %}
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load i18n static teams_tags %}
+
+{% block title %}{% translate "Lineup" %} · {{ team.team.name }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb small">
+    <li class="breadcrumb-item"><a href="{% url 'matches:panel' %}">{% translate "Matches" %}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'matches:sheet' match.pk %}">{{ match }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{% translate "Lineup" %}</li>
+  </ol>
+</nav>
+
+<div class="page-header d-flex align-items-center gap-3 mb-3">
+  {% team_badge team size="3rem" %}
+  <div>
+    <h1 class="h3 mb-0">{% translate "Lineup" %} · {{ team.team.name }}</h1>
+    <p class="text-body-secondary small mb-0">
+      {% blocktranslate %}Mark between {{ min_starters }} and {{ max_starters }} starters, the substitutes and one captain. Only players with an active registration can be listed.{% endblocktranslate %}
+    </p>
+  </div>
+</div>
+
+{% if locked %}
+  <div class="alert alert-warning">🔒 {% translate "The match sheet is closed for finished or canceled matches." %}</div>
+{% endif %}
+
+{% for error in formset.non_form_errors %}
+  <div class="alert alert-danger">{{ error }}</div>
+{% endfor %}
+
+<form method="post" id="lineup-form" data-min="{{ min_starters }}" data-max="{{ max_starters }}">
+  {% csrf_token %}
+  {{ formset.management_form }}
+
+  <div class="card lineup-counter mb-3">
+    <div class="card-body py-2 d-flex flex-wrap align-items-center gap-4">
+      <div><div class="section-title">{% translate "Starters" %}</div><span class="count" data-count="STARTER">0</span><span class="text-body-secondary"> / {{ max_starters }}</span></div>
+      <div><div class="section-title">{% translate "Substitutes" %}</div><span class="count" data-count="SUBSTITUTE">0</span></div>
+      <div><div class="section-title">{% translate "captain" %}</div><span class="fw-semibold" data-captain>—</span></div>
+      <div class="ms-auto d-flex gap-2">
+        <a class="btn btn-outline-secondary" href="{% url 'matches:sheet' match.pk %}">{% translate "Back" %}</a>
+        <button class="btn btn-primary" type="submit"{% if locked %} disabled{% endif %}>✔ {% translate "Save lineup" %}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead class="table-light small">
+          <tr>
+            <th>{% translate "player" as label %}{{ label|capfirst }}</th>
+            <th style="min-width: 15rem">{% translate "role" as label %}{{ label|capfirst }}</th>
+            <th style="width: 6.5rem">{% translate "shirt number" as label %}{{ label|capfirst }}</th>
+            <th style="width: 12rem">{% translate "position" as label %}{{ label|capfirst }}</th>
+            <th class="text-center" style="width: 5.5rem">{% translate "captain" as label %}{{ label|capfirst }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form, registration in formset.rows %}
+            <tr class="lineup-row" data-row data-name="{{ registration.player.display_name }}">
+              <td>
+                {{ form.registration_id }}
+                <div class="fw-semibold">{{ registration.player.display_name }}</div>
+                {% if registration.player.nickname %}<div class="text-body-secondary small">{{ registration.player.full_name }}</div>{% endif %}
+                {% if registration.status != "ACTIVE" %}<span class="badge text-bg-warning">{{ registration.get_status_display }}</span>{% endif %}
+                {% for error in form.non_field_errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+              </td>
+              <td>
+                <div class="btn-group btn-group-sm w-100" role="radiogroup" aria-label="{% translate 'role' %}">
+                  {% for choice in form.role %}
+                    <input type="radio" class="btn-check" name="{{ choice.data.name }}" id="{{ choice.id_for_label }}"
+                           value="{{ choice.data.value }}" autocomplete="off" data-role-input{% if choice.data.selected %} checked{% endif %}{% if locked %} disabled{% endif %}>
+                    <label class="btn {% if choice.data.value == 'STARTER' %}btn-outline-success{% elif choice.data.value == 'SUBSTITUTE' %}btn-outline-primary{% else %}btn-outline-secondary{% endif %}"
+                           for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                  {% endfor %}
+                </div>
+                {% for error in form.role.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+              </td>
+              <td>{{ form.shirt_number }}{% for error in form.shirt_number.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</td>
+              <td>{{ form.position }}</td>
+              <td class="text-center">
+                <input class="form-check-input fs-5" type="checkbox" name="{{ form.is_captain.html_name }}" id="{{ form.is_captain.id_for_label }}"
+                       data-captain-input{% if form.is_captain.value %} checked{% endif %}{% if locked %} disabled{% endif %}
+                       aria-label="{% translate 'captain' %}">
+                {% for error in form.is_captain.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" class="text-body-secondary text-center py-4">{% translate "This team has no registered players." %}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/lineup.js' %}" defer></script>
+{% endblock %}

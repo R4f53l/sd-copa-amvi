@@ -768,3 +768,618 @@ msgstr "Dados pessoais"
 #: apps/teams/admin.py
 msgid "On the pitch"
 msgstr "Em campo"
+
+#: apps/matches/forms.py:114
+msgid "The captain must be on the match sheet."
+msgstr "O capitão precisa estar na súmula."
+
+#: apps/matches/forms.py:123
+msgid "Only players with an active registration can be listed."
+msgstr "Só jogadores com inscrição ativa podem ser relacionados."
+
+#: apps/matches/forms.py:191
+#, python-format
+msgid "Choose between %(min)d and %(max)d starters (currently %(count)d)."
+msgstr "Escolha entre %(min)d e %(max)d titulares (atualmente %(count)d)."
+
+#: apps/matches/forms.py:203
+msgid "Choose only one captain."
+msgstr "Escolha apenas um capitão."
+
+#: apps/matches/forms.py:212
+msgid "Two listed players have the same shirt number."
+msgstr "Dois jogadores relacionados estão com o mesmo número de camisa."
+
+#: apps/matches/forms.py:225
+#, python-format
+msgid ""
+"These players took part in events of this match and cannot be removed: "
+"%(names)s."
+msgstr ""
+"Estes jogadores participaram de eventos deste jogo e não podem ser removidos:"
+" %(names)s."
+
+#: apps/matches/forms.py:94
+msgid "Not listed"
+msgstr "Não relacionado"
+
+#: apps/matches/forms.py:178
+msgid ""
+"The match sheet was changed by someone else. Reload the page and try again."
+msgstr ""
+"A súmula foi alterada por outra pessoa. Recarregue a página e tente "
+"novamente."
+
+#: apps/matches/models.py:125
+msgid "The home and away teams must be different."
+msgstr "Os times mandante e visitante devem ser diferentes."
+
+#: apps/matches/models.py:184
+msgid "The match date must be within the championship period."
+msgstr "A data do jogo deve estar dentro do período do campeonato."
+
+#: apps/matches/services.py:42
+msgid "The match sheet is closed for finished or canceled matches."
+msgstr "A súmula fica fechada para jogos encerrados ou cancelados."
+
+#: apps/matches/services.py:136
+msgid "The same player cannot have two roles in one event."
+msgstr "O mesmo jogador não pode ter dois papéis no mesmo evento."
+
+#: apps/matches/services.py:192
+msgid "This event has already been canceled."
+msgstr "Este evento já foi cancelado."
+
+#: apps/matches/services.py:121
+msgid "This field is required."
+msgstr "Este campo é obrigatório."
+
+#: apps/matches/services.py:131
+msgid "Choose a player from the other team."
+msgstr "Escolha um jogador do outro time."
+
+#: apps/matches/services.py:133
+msgid "Choose a player from the event's team."
+msgstr "Escolha um jogador do time do evento."
+
+#: apps/matches/views.py:117
+#, python-format
+msgid "Match %(match)s scheduled."
+msgstr "Jogo %(match)s agendado."
+
+#: apps/matches/views.py:133
+#, python-format
+msgid "Match %(match)s updated."
+msgstr "Jogo %(match)s atualizado."
+
+#: apps/matches/views.py:255
+msgid "Choose an event type."
+msgstr "Escolha um tipo de evento."
+
+#: apps/matches/views.py:281
+#, python-format
+msgid "%(event)s recorded at %(minute)s."
+msgstr "%(event)s registrado aos %(minute)s."
+
+#: apps/matches/views.py:294
+msgid "Enter the cancellation reason."
+msgstr "Informe o motivo do cancelamento."
+
+#: apps/matches/views.py:179
+#, python-format
+msgid "Lineup of %(team)s saved."
+msgstr "Escalação do %(team)s salva."
+
+#: apps/matches/views.py:307
+#, python-format
+msgid "Event %(event)s canceled."
+msgstr "Evento %(event)s cancelado."
+
+#: templates/base.html
+msgid "Menu"
+msgstr "Menu"
+
+#: templates/base.html
+msgid "Matches"
+msgstr "Jogos"
+
+#: templates/base.html
+msgid "Admin"
+msgstr "Administração"
+
+#: templates/base.html
+msgid "Language"
+msgstr "Idioma"
+
+#: templates/base.html
+msgid "Log out"
+msgstr "Sair"
+
+#: templates/base.html
+msgid "Log in"
+msgstr "Entrar"
+
+#: templates/base.html
+msgid "Close"
+msgstr "Fechar"
+
+#: templates/includes/pagination.html
+msgid "Pagination"
+msgstr "Paginação"
+
+#: templates/includes/pagination.html
+msgid "Previous"
+msgstr "Anterior"
+
+#: templates/includes/pagination.html
+msgid "Next"
+msgstr "Próxima"
+
+#: apps/matches/templates/matches/_lineup_card.html
+msgid "Edit"
+msgstr "Editar"
+
+#: apps/matches/templates/matches/_lineup_card.html
+msgid "Lineup not defined."
+msgstr "Escalação não definida."
+
+#: apps/matches/templates/matches/lineup_form.html
+msgid "Lineup"
+msgstr "Escalação"
+
+#: apps/matches/templates/matches/lineup_form.html
+msgid "This team has no registered players."
+msgstr "Este time não tem jogadores inscritos."
+
+#: apps/matches/templates/matches/lineup_form.html
+msgid "Save lineup"
+msgstr "Salvar escalação"
+
+#: apps/matches/templates/matches/lineup_form.html
+#, python-format
+msgid ""
+"Mark between %(min_starters)s and %(max_starters)s starters, the substitutes "
+"and one captain. Only players with an active registration can be listed."
+msgstr ""
+"Marque entre %(min_starters)s e %(max_starters)s titulares, os reservas e um "
+"capitão. Só jogadores com inscrição ativa podem ser relacionados."
+
+#: apps/matches/templates/matches/match_form.html
+msgid "Edit match"
+msgstr "Editar jogo"
+
+#: apps/matches/templates/matches/match_form.html
+msgid "New match"
+msgstr "Novo jogo"
+
+#: apps/matches/templates/matches/match_form.html
+msgid "Save"
+msgstr "Salvar"
+
+#: apps/matches/templates/matches/match_form.html
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Create a championship first."
+msgstr "Cadastre um campeonato primeiro."
+
+#: apps/matches/templates/matches/match_list.html
+msgid "All"
+msgstr "Todos"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Filter"
+msgstr "Filtrar"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "No round"
+msgstr "Sem rodada"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Match sheet"
+msgstr "Súmula"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "No matches found."
+msgstr "Nenhum jogo encontrado."
+
+#: apps/matches/templates/matches/match_list.html
+#, python-format
+msgid "Round %(number)s"
+msgstr "Rodada %(number)s"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Penalties"
+msgstr "Pênaltis"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Timeline"
+msgstr "Lance a lance"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Confirm cancellation"
+msgstr "Confirmar cancelamento"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "No events recorded yet."
+msgstr "Nenhum evento registrado ainda."
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Record event"
+msgstr "Registrar evento"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Lineups"
+msgstr "Escalações"
+
+#: templates/registration/login.html
+msgid "Back-office for administrators and table officials."
+msgstr "Painel para administradores e mesários."
+
+#: templates/registration/login.html
+msgid "Incorrect username or password."
+msgstr "Usuário ou senha incorretos."
+
+#: apps/matches/templates/matches/_lineup_card.html
+msgid "Define"
+msgstr "Definir"
+
+#: apps/matches/templates/matches/_lineup_card.html
+msgid "Substitutes"
+msgstr "Reservas"
+
+#: apps/matches/templates/matches/lineup_form.html
+msgid "Starters"
+msgstr "Titulares"
+
+#: apps/matches/templates/matches/lineup_form.html
+msgid "Back"
+msgstr "Voltar"
+
+#: apps/matches/templates/matches/match_form.html
+msgid "Fixture"
+msgstr "Confronto"
+
+#: apps/matches/templates/matches/match_form.html
+msgid "When and where"
+msgstr "Quando e onde"
+
+#: apps/matches/templates/matches/match_form.html
+msgid "Table officials"
+msgstr "Mesários"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Schedule fixtures and run the match sheets."
+msgstr "Agende os confrontos e conduza as súmulas."
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Matches assigned to you."
+msgstr "Jogos designados para você."
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Choose the championship"
+msgstr "Escolha o campeonato"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Search…"
+msgstr "Buscar…"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Clear filters"
+msgstr "Limpar filtros"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Try clearing the filters."
+msgstr "Tente limpar os filtros."
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Use “New match” to schedule the first one."
+msgstr "Use “Novo jogo” para agendar o primeiro."
+
+#: apps/matches/templates/matches/match_list.html
+msgid "You have not been assigned to any match yet."
+msgstr "Você ainda não foi designado para nenhum jogo."
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Watch the broadcast"
+msgstr "Assistir à transmissão"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Define both lineups first: players are chosen from the match sheet."
+msgstr ""
+"Defina as duas escalações primeiro: os jogadores são escolhidos a partir da "
+"súmula."
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "1. Choose what happened:"
+msgstr "1. Escolha o que aconteceu:"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Most recent first"
+msgstr "Mais recentes primeiro"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Why? e.g. offside"
+msgstr "Por quê? Ex.: impedimento"
+
+#: apps/matches/templates/matches/match_sheet.html
+#, python-format
+msgid "2. Fill in the details of “%(name)s”:"
+msgstr "2. Preencha os detalhes de “%(name)s”:"
+
+#: templates/base.html
+msgid "Championships"
+msgstr "Campeonatos"
+
+#: templates/base.html
+msgid "Teams"
+msgstr "Times"
+
+#: apps/teams/templates/teams/_subnav.html
+msgid "Players"
+msgstr "Jogadores"
+
+#: apps/teams/templates/teams/_subnav.html
+msgid "Stadiums"
+msgstr "Estádios"
+
+#: apps/teams/templates/teams/_subnav.html
+msgid "Cities"
+msgstr "Cidades"
+
+#: apps/teams/forms.py
+msgid "A player with this document number already exists."
+msgstr "Já existe um jogador com este número de documento."
+
+#: apps/teams/views.py
+msgid "Please correct the highlighted errors below."
+msgstr "Corrija os erros destacados abaixo."
+
+#: apps/teams/views.py
+#, python-format
+msgid "Team %(object)s saved."
+msgstr "Time %(object)s salvo."
+
+#: apps/teams/views.py
+#, python-format
+msgid "Team %(object)s updated."
+msgstr "Time %(object)s atualizado."
+
+#: apps/teams/views.py
+#, python-format
+msgid "Player %(object)s saved."
+msgstr "Jogador %(object)s salvo."
+
+#: apps/teams/views.py
+#, python-format
+msgid "Player %(object)s updated."
+msgstr "Jogador %(object)s atualizado."
+
+#: apps/teams/views.py
+#, python-format
+msgid "Stadium %(object)s saved."
+msgstr "Estádio %(object)s salvo."
+
+#: apps/teams/views.py
+#, python-format
+msgid "Stadium %(object)s updated."
+msgstr "Estádio %(object)s atualizado."
+
+#: apps/teams/views.py
+#, python-format
+msgid "City %(object)s saved."
+msgstr "Cidade %(object)s salva."
+
+#: apps/teams/views.py
+#, python-format
+msgid "City %(object)s updated."
+msgstr "Cidade %(object)s atualizada."
+
+#: apps/teams/templates/teams/team_list.html
+msgid "Clubs and municipal teams registered in the system."
+msgstr "Clubes e seleções municipais cadastrados no sistema."
+
+#: apps/teams/templates/teams/team_list.html
+msgid "New team"
+msgstr "Novo time"
+
+#: apps/teams/templates/teams/team_form.html
+msgid "Edit team"
+msgstr "Editar time"
+
+#: apps/teams/templates/teams/team_list.html
+msgid "Search"
+msgstr "Buscar"
+
+#: apps/teams/templates/teams/team_list.html
+msgid "Inactive"
+msgstr "Inativo"
+
+#: apps/teams/templates/teams/team_list.html
+msgid "No teams found."
+msgstr "Nenhum time encontrado."
+
+#: apps/teams/templates/teams/team_form.html
+msgid "General"
+msgstr "Geral"
+
+#: apps/teams/templates/teams/player_list.html
+msgid "Athletes available to be registered in championships."
+msgstr "Atletas disponíveis para inscrição nos campeonatos."
+
+#: apps/teams/templates/teams/player_list.html
+msgid "New player"
+msgstr "Novo jogador"
+
+#: apps/teams/templates/teams/player_form.html
+msgid "Edit player"
+msgstr "Editar jogador"
+
+#: apps/teams/templates/teams/player_list.html
+msgid "No players found."
+msgstr "Nenhum jogador encontrado."
+
+#: apps/teams/templates/teams/stadium_list.html
+msgid "Venues where championship matches are played."
+msgstr "Praças esportivas onde são disputados os jogos."
+
+#: apps/teams/templates/teams/stadium_list.html
+msgid "New stadium"
+msgstr "Novo estádio"
+
+#: apps/teams/templates/teams/stadium_form.html
+msgid "Edit stadium"
+msgstr "Editar estádio"
+
+#: apps/teams/templates/teams/stadium_list.html
+msgid "No stadiums found."
+msgstr "Nenhum estádio encontrado."
+
+#: apps/teams/templates/teams/city_list.html
+msgid "Participating municipalities of Copa AMVI."
+msgstr "Municípios participantes da Copa AMVI."
+
+#: apps/teams/templates/teams/city_list.html
+msgid "New city"
+msgstr "Nova cidade"
+
+#: apps/teams/templates/teams/city_form.html
+msgid "Edit city"
+msgstr "Editar cidade"
+
+#: apps/teams/templates/teams/city_list.html
+msgid "No cities found."
+msgstr "Nenhuma cidade encontrada."
+
+#: apps/championships/forms.py
+msgid "The end date must be on or after the start date."
+msgstr "A data de término deve ser igual ou posterior à data de início."
+
+#: apps/championships/forms.py
+msgid "enrolled"
+msgstr "inscrito"
+
+#: apps/championships/forms.py
+msgid "Invalid team selection. Reload the page and try again."
+msgstr "Seleção de times inválida. Recarregue a página e tente novamente."
+
+#: apps/championships/forms.py
+#, python-format
+msgid "Team %(team)s already has scheduled matches and cannot be removed."
+msgstr "O time %(team)s já possui jogos agendados e não pode ser removido."
+
+#: apps/championships/forms.py
+msgid "Shirt number must be between 1 and 99."
+msgstr "O número da camisa deve estar entre 1 e 99."
+
+#: apps/championships/forms.py
+msgid "The release date must be on or after the registration date."
+msgstr "A data de desligamento deve ser igual ou posterior à data de inscrição."
+
+#: apps/championships/forms.py
+msgid "This player is already registered in this team."
+msgstr "Este jogador já está inscrito neste time."
+
+#: apps/championships/forms.py
+msgid "This shirt number is already in use by another active player on this team."
+msgstr "Este número de camisa já está em uso por outro jogador ativo neste time."
+
+#: apps/championships/forms.py
+#, python-format
+msgid "This team has reached the limit of %(max)d active players in the championship."
+msgstr "Este time atingiu o limite de %(max)d jogadores ativos no campeonato."
+
+#: apps/championships/views.py
+#, python-format
+msgid "Championship %(championship)s created."
+msgstr "Campeonato %(championship)s criado."
+
+#: apps/championships/views.py
+#, python-format
+msgid "Championship %(championship)s updated."
+msgstr "Campeonato %(championship)s atualizado."
+
+#: apps/championships/views.py
+#, python-format
+msgid "Enrolled teams for %(championship)s saved."
+msgstr "Times inscritos em %(championship)s salvos."
+
+#: apps/championships/views.py
+#, python-format
+msgid "Player %(player)s registered for %(team)s."
+msgstr "Jogador %(player)s inscrito no %(team)s."
+
+#: apps/championships/views.py
+#, python-format
+msgid "Registration of %(player)s updated."
+msgstr "Inscrição de %(player)s atualizada."
+
+#: apps/championships/templates/championships/championship_list.html
+msgid "Editions, rules, enrolled teams and player rosters."
+msgstr "Edições, regras, times inscritos e elencos de jogadores."
+
+#: apps/championships/templates/championships/championship_list.html
+msgid "New championship"
+msgstr "Novo campeonato"
+
+#: apps/championships/templates/championships/championship_form.html
+msgid "Edit championship"
+msgstr "Editar campeonato"
+
+#: apps/championships/templates/championships/championship_form.html
+msgid "Regulation"
+msgstr "Regulamento"
+
+#: apps/championships/templates/championships/championship_form.html
+msgid "Rules"
+msgstr "Regras"
+
+#: apps/championships/templates/championships/championship_list.html
+msgid "Manage"
+msgstr "Gerenciar"
+
+#: apps/championships/templates/championships/championship_list.html
+msgid "No championships found."
+msgstr "Nenhum campeonato encontrado."
+
+#: apps/championships/templates/championships/championship_detail.html
+#, python-format
+msgid "Up to %(max)s players per team"
+msgstr "Até %(max)s jogadores por time"
+
+#: apps/championships/templates/championships/championship_detail.html
+msgid "Enroll teams"
+msgstr "Inscrever times"
+
+#: apps/championships/templates/championships/championship_detail.html
+msgid "Enrolled teams and standings"
+msgstr "Times inscritos e classificação"
+
+#: apps/championships/templates/championships/championship_detail.html
+msgid "No teams enrolled in this championship yet."
+msgstr "Nenhum time inscrito neste campeonato ainda."
+
+#: apps/championships/templates/championships/championship_teams_form.html
+msgid "Select the participating teams and assign their group."
+msgstr "Selecione os times participantes e defina o grupo."
+
+#: apps/championships/templates/championships/championship_teams_form.html
+msgid "Enrolled"
+msgstr "Inscrito"
+
+#: apps/championships/templates/championships/championship_teams_form.html
+msgid "No teams available."
+msgstr "Nenhum time disponível."
+
+#: apps/championships/templates/championships/team_roster.html
+msgid "active players"
+msgstr "jogadores ativos"
+
+#: apps/championships/templates/championships/team_roster.html
+msgid "Register player"
+msgstr "Inscrever jogador"
+
+#: apps/championships/templates/championships/player_registration_form.html
+msgid "Edit registration"
+msgstr "Editar inscrição"

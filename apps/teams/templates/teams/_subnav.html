@@ -1,0 +1,21 @@
+{% load i18n %}
+{% with url_name=request.resolver_match.url_name %}
+<ul class="nav nav-pills gap-1 mb-4">
+  <li class="nav-item">
+    <a class="nav-link{% if url_name == 'team_list' or url_name == 'team_create' or url_name == 'team_update' %} active{% endif %}"
+       href="{% url 'teams:team_list' %}">🛡️ {% translate "Teams" %}</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link{% if url_name == 'player_list' or url_name == 'player_create' or url_name == 'player_update' %} active{% endif %}"
+       href="{% url 'teams:player_list' %}">🏃 {% translate "Players" %}</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link{% if url_name == 'stadium_list' or url_name == 'stadium_create' or url_name == 'stadium_update' %} active{% endif %}"
+       href="{% url 'teams:stadium_list' %}">🏟️ {% translate "Stadiums" %}</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link{% if url_name == 'city_list' or url_name == 'city_create' or url_name == 'city_update' %} active{% endif %}"
+       href="{% url 'teams:city_list' %}">🏙️ {% translate "Cities" %}</a>
+  </li>
+</ul>
+{% endwith %}

@@ -1,0 +1,27 @@
+{% load i18n teams_tags %}
+<div class="col-md-6">
+  <div class="card h-100">
+    <div class="card-header bg-transparent d-flex justify-content-between align-items-center gap-2">
+      <span class="d-flex align-items-center gap-2 fw-semibold text-truncate">{% team_badge team size="1.75rem" %}{{ team.team.name }}</span>
+      {% if not locked %}
+        <a class="btn btn-sm {% if lineup %}btn-outline-primary{% else %}btn-primary{% endif %} text-nowrap" href="{% url 'matches:lineup' match.pk side %}">
+          {% if lineup %}{% translate "Edit" %}{% else %}+ {% translate "Define" %}{% endif %}
+        </a>
+      {% endif %}
+    </div>
+    <ul class="list-group list-group-flush small">
+      {% for entry in lineup %}
+        {% ifchanged entry.role %}
+          {% if entry.role == "SUBSTITUTE" %}<li class="list-group-item section-title bg-body-tertiary py-1">{% translate "Substitutes" %}</li>{% endif %}
+        {% endifchanged %}
+        <li class="list-group-item d-flex gap-2 align-items-center{% if entry.role == 'SUBSTITUTE' %} text-body-secondary{% endif %}">
+          <span class="badge text-bg-light border" style="min-width: 2rem">{{ entry.shirt_number|default:"—" }}</span>
+          <span class="flex-grow-1 text-truncate">{{ entry.player_registration.player.display_name }}</span>
+          {% if entry.is_captain %}<span class="badge text-bg-warning" title="{% translate 'captain' %}">C</span>{% endif %}
+        </li>
+      {% empty %}
+        <li class="list-group-item text-body-secondary text-center py-4">{% translate "Lineup not defined." %}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
