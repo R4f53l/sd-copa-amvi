@@ -58,12 +58,31 @@ class ChampionshipsPagesTestCase(TestCase):
     def login(self, user):
         self.client.force_login(user)
 
-    def test_permissions(self):
-        # anonimo redireciona para login
+    def test_public_read_pages_and_admin_permissions(self):
         list_url = reverse("championships:list")
         resp = self.client.get(list_url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertFalse(resp.context["can_manage"])
+        self.assertNotContains(
+            resp, reverse("championships:create")
+        )
+        detail_url = reverse(
+            "championships:detail", args=[self.championship.pk]
+        )
+        detail = self.client.get(detail_url)
+        self.assertEqual(detail.status_code, 200)
+        self.assertFalse(detail.context["can_manage"])
+        roster_url = reverse(
+            "championships:roster",
+            args=[self.championship.pk, self.entry_a.pk],
+        )
+        roster = self.client.get(roster_url)
+        self.assertEqual(roster.status_code, 200)
+        self.assertFalse(roster.context["can_manage"])
+        register_response = self.client.post(roster_url, {})
         self.assertRedirects(
-            resp, f"{reverse('accounts:login')}?next={list_url}"
+            register_response,
+            f"{reverse('accounts:login')}?next={roster_url}",
         )
 
         # mesario pode ver mas nao pode alterar

@@ -1,7 +1,7 @@
 from functools import cached_property
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Count, Q
@@ -16,10 +16,7 @@ from django.views.generic import (
     UpdateView,
 )
 
-from apps.accounts.decorators import (
-    AdminRequiredMixin,
-    MesarioOuAdminRequiredMixin,
-)
+from apps.accounts.decorators import AdminRequiredMixin
 
 from .forms import (
     ChampionshipForm,
@@ -36,7 +33,7 @@ def can_manage_championships(user):
 # --- campeonatos ---
 
 
-class ChampionshipListView(LoginRequiredMixin, ListView):
+class ChampionshipListView(ListView):
     model = Championship
     template_name = "championships/championship_list.html"
     context_object_name = "championships"
@@ -71,7 +68,7 @@ class ChampionshipListView(LoginRequiredMixin, ListView):
         return context
 
 
-class ChampionshipDetailView(LoginRequiredMixin, DetailView):
+class ChampionshipDetailView(DetailView):
     model = Championship
     template_name = "championships/championship_detail.html"
     context_object_name = "championship"
@@ -218,7 +215,7 @@ class ChampionshipTeamsView(AdminRequiredMixin, TemplateView):
 # --- inscricao de jogadores por time no campeonato ---
 
 
-class TeamRosterView(MesarioOuAdminRequiredMixin, TemplateView):
+class TeamRosterView(TemplateView):
     template_name = "championships/team_roster.html"
 
     @cached_property
@@ -260,6 +257,8 @@ class TeamRosterView(MesarioOuAdminRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         if not can_manage_championships(request.user):
+            if not request.user.is_authenticated:
+                return redirect_to_login(request.get_full_path())
             raise PermissionDenied
         form = self.get_form()
         if not form.is_valid():

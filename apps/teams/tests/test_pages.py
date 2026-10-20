@@ -41,18 +41,23 @@ class TeamsPagesTestCase(TestCase):
     def login(self, user):
         self.client.force_login(user)
 
-    def test_anonymous_is_redirected_to_login(self):
+    def test_anonymous_can_browse_lists_without_admin_actions(self):
         for name in (
             "teams:team_list",
             "teams:player_list",
             "teams:stadium_list",
             "teams:city_list",
         ):
-            url = reverse(name)
-            response = self.client.get(url)
-            self.assertRedirects(
-                response, f"{reverse('accounts:login')}?next={url}"
-            )
+            response = self.client.get(reverse(name))
+            self.assertEqual(response.status_code, 200)
+            self.assertFalse(response.context["can_manage"])
+            for create_name in (
+                "teams:team_create",
+                "teams:player_create",
+                "teams:stadium_create",
+                "teams:city_create",
+            ):
+                self.assertNotContains(response, reverse(create_name))
 
     def test_table_official_can_view_lists_but_cannot_mutate(self):
         self.login(self.official)

@@ -52,7 +52,7 @@
 
 <div class="row g-4">
   {# --- Record an event + lineups --------------------------------------- #}
-  {% if not locked %}
+  {% if can_officiate and not locked %}
   <div class="col-lg-5 order-lg-2">
       <div class="card mb-4" id="record">
         <div class="card-body">
@@ -149,7 +149,7 @@
                   {% if event.canceled_at %}· {{ event.canceled_at|naturaltime }}{% endif %}
                 </div>
               {% endif %}
-              {% if not event.is_canceled and not locked %}
+              {% if can_officiate and not event.is_canceled and not locked %}
                 <form method="post" action="{% url 'matches:event_cancel' match.pk event.pk %}" class="collapse mt-2" id="cancel-{{ event.pk }}">
                   {% csrf_token %}
                   <div class="input-group input-group-sm">
@@ -160,7 +160,7 @@
                 </form>
               {% endif %}
             </div>
-            {% if not event.is_canceled and not locked %}
+            {% if can_officiate and not event.is_canceled and not locked %}
               <button class="btn btn-sm btn-link text-danger text-decoration-none p-0" type="button"
                       data-bs-toggle="collapse" data-bs-target="#cancel-{{ event.pk }}"
                       aria-controls="cancel-{{ event.pk }}" aria-expanded="false">{% translate "Cancel" %}</button>
