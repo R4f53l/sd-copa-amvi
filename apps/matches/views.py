@@ -1,7 +1,6 @@
 """Server-rendered views (Django templates) for the matches app."""
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db.models import Prefetch, Q
 from django.shortcuts import get_object_or_404, redirect
@@ -10,6 +9,7 @@ from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
+from apps.accounts.decorators import MesarioOuAdminRequiredMixin
 from apps.championships.models import Championship
 
 from . import services
@@ -31,7 +31,7 @@ from .permissions import (
 # ---------------------------------------------------------------------------
 
 
-class MatchListView(LoginRequiredMixin, ListView):
+class MatchListView(MesarioOuAdminRequiredMixin, ListView):
     """
     Back-office fixture list, grouped by round. Administrators see every
     match; table officials only the matches assigned to them.

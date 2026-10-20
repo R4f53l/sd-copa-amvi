@@ -1,7 +1,8 @@
 from functools import cached_property
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect
@@ -15,6 +16,11 @@ from django.views.generic import (
     UpdateView,
 )
 
+from apps.accounts.decorators import (
+    AdminRequiredMixin,
+    MesarioOuAdminRequiredMixin,
+)
+
 from .forms import (
     ChampionshipForm,
     ChampionshipTeamFormSet,
@@ -25,11 +31,6 @@ from .models import Championship, ChampionshipTeam, PlayerRegistration
 
 def can_manage_championships(user):
     return user.is_authenticated and user.is_admin
-
-
-class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    def test_func(self):
-        return can_manage_championships(self.request.user)
 
 
 # --- campeonatos ---
@@ -217,7 +218,7 @@ class ChampionshipTeamsView(AdminRequiredMixin, TemplateView):
 # --- inscricao de jogadores por time no campeonato ---
 
 
-class TeamRosterView(LoginRequiredMixin, TemplateView):
+class TeamRosterView(MesarioOuAdminRequiredMixin, TemplateView):
     template_name = "championships/team_roster.html"
 
     @cached_property
@@ -259,7 +260,7 @@ class TeamRosterView(LoginRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         if not can_manage_championships(request.user):
-            return self.handle_no_permission()
+            raise PermissionDenied
         form = self.get_form()
         if not form.is_valid():
             messages.error(

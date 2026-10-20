@@ -1383,3 +1383,80 @@ msgstr "Inscrever jogador"
 #: apps/championships/templates/championships/player_registration_form.html
 msgid "Edit registration"
 msgstr "Editar inscrição"
+
+#: templates/base.html
+msgid "My assignments"
+msgstr "Meus jogos"
+
+#: templates/base.html apps/accounts/templates/accounts/table_official_form.html
+msgid "Create table official"
+msgstr "Cadastrar mesário"
+
+#: templates/base.html apps/accounts/templates/accounts/password_change_form.html
+msgid "Change password"
+msgstr "Alterar senha"
+
+#: apps/accounts/templates/accounts/official_dashboard.html
+msgid "My assigned matches"
+msgstr "Jogos atribuídos a mim"
+
+#: apps/accounts/templates/accounts/official_dashboard.html
+msgid "Matches assigned to your account."
+msgstr "Partidas atribuídas à sua conta."
+
+#: apps/accounts/templates/accounts/official_dashboard.html
+msgid "Date and time"
+msgstr "Data e horário"
+
+#: apps/accounts/templates/accounts/official_dashboard.html
+msgid "Championship"
+msgstr "Campeonato"
+
+#: apps/accounts/templates/accounts/official_dashboard.html
+msgid "Match"
+msgstr "Confronto"
+
+#: apps/accounts/templates/accounts/official_dashboard.html
+msgid "Status"
+msgstr "Situação"
+
+#: apps/accounts/templates/accounts/official_dashboard.html
+msgid "Actions"
+msgstr "Ações"
+
+#: apps/accounts/templates/accounts/official_dashboard.html
+msgid "Open match sheet"
+msgstr "Abrir súmula"
+
+#: apps/accounts/templates/accounts/official_dashboard.html
+msgid "No matches are assigned to you."
+msgstr "Nenhuma partida está atribuída a você."
+
+#: apps/accounts/templates/accounts/table_official_form.html
+msgid "The account will be created with the table official role."
+msgstr "A conta será criada com o perfil de mesário."
+
+#: apps/accounts/templates/accounts/table_official_form.html
+msgid "Create account"
+msgstr "Criar conta"
+
+#: apps/accounts/views.py
+#, python-format
+msgid "Table official %(username)s created."
+msgstr "Mesário %(username)s criado."
+
+#: apps/accounts/templates/accounts/password_change_form.html
+msgid "Save new password"
+msgstr "Salvar nova senha"
+
+#: apps/accounts/templates/accounts/password_change_done.html
+msgid "Password changed"
+msgstr "Senha alterada"
+
+#: apps/accounts/templates/accounts/password_change_done.html
+msgid "Your password has been changed successfully."
+msgstr "Sua senha foi alterada com sucesso."
+
+#: apps/accounts/templates/accounts/password_change_done.html
+msgid "Back to matches"
+msgstr "Voltar aos jogos"

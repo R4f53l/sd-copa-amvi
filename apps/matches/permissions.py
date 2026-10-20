@@ -2,8 +2,13 @@
 
 from functools import cached_property
 
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404
+
+from apps.accounts.decorators import (
+    AdminRequiredMixin,
+    MesarioOuAdminRequiredMixin,
+    is_mesario_ou_admin,
+)
 
 from .models import Match
 
@@ -15,19 +20,14 @@ def can_manage_matches(user):
 
 def can_officiate(user, match):
     """Administrators, or table officials assigned to this match."""
-    if not user.is_authenticated:
+    if not is_mesario_ou_admin(user):
         return False
     if user.is_admin:
         return True
     return match.table_officials.filter(pk=user.pk).exists()
 
 
-class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    def test_func(self):
-        return can_manage_matches(self.request.user)
-
-
-class MatchOfficialRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+class MatchOfficialRequiredMixin(MesarioOuAdminRequiredMixin):
     """Loads ``self.match`` from the URL and checks the user may run it."""
 
     match_url_kwarg = "pk"

@@ -32,7 +32,7 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.is_superuser or self.role == self.Role.ADMIN
+        return self.is_superuser or self.is_staff or self.role == self.Role.ADMIN
 
     @property
     def is_table_official(self):
