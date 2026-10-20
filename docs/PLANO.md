@@ -80,9 +80,9 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Controle de acesso das views: só admin, ou admin e mesário
 
 **Dev 2**
-- [ ] Cadastros de times, jogadores, estádios e cidades com ModelForm
-- [ ] Listas paginadas com busca
-- [ ] Mensagens de sucesso e erro
+- [x] Cadastros de times, jogadores, estádios e cidades com ModelForm
+- [x] Listas paginadas com busca
+- [x] Mensagens de sucesso e erro
 
 **Dev 3**
 - [x] Cadastro de jogos (calendário de confrontos)
@@ -104,9 +104,9 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Testes de permissão
 
 **Dev 2**
-- [ ] Cadastro de campeonatos
-- [ ] Inscrição de times com formset
-- [ ] Inscrição de jogadores, validando um time por campeonato e o número da camisa
+- [x] Cadastro de campeonatos
+- [x] Inscrição de times com formset
+- [x] Inscrição de jogadores, validando um time por campeonato e o número da camisa
 
 **Dev 3**
 - [x] Formulário de escalação com formset: 11 titulares, capitão único e só jogadores aptos

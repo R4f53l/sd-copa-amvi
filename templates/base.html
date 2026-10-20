@@ -29,6 +29,14 @@
               <a class="nav-link{% if section == 'matches' %} active{% endif %}"{% if section == 'matches' %} aria-current="page"{% endif %}
                  href="{% url 'matches:list' %}">{% translate "Matches" %}</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link{% if section == 'championships' %} active{% endif %}"{% if section == 'championships' %} aria-current="page"{% endif %}
+                 href="{% url 'championships:list' %}">{% translate "Championships" %}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if section == 'teams' %} active{% endif %}"{% if section == 'teams' %} aria-current="page"{% endif %}
+                 href="{% url 'teams:team_list' %}">{% translate "Teams" %}</a>
+            </li>
             {% if user.is_staff %}
               <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">{% translate "Admin" %}</a></li>
             {% endif %}
