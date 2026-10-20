@@ -12,6 +12,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from config.views import home
+
 # REST API for external systems. The website itself uses the web routes.
 api_v1 = [
     path("auth/token/", TokenObtainPairView.as_view(), name="token_obtain"),
@@ -33,6 +35,7 @@ web = [
 ]
 
 urlpatterns = [
+    path("", home, name="home"),
     path("admin/", admin.site.urls),
     path("i18n/", include("django.conf.urls.i18n")),
     path("api/v1/", include(api_v1)),

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% load humanize %}
+{% block title %}{% translate "Copa AMVI — Home" %}{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <p>{% translate "Regional football championship" %}</p>
+  <h1>{% translate "Welcome to Copa AMVI" %}</h1>
+  <p>
+    {% translate "Follow the championship and explore the tools available for teams, officials, and technology partners." %}
+  </p>
+  <a class="button" href="{% url 'matches:list' %}">{% translate "View match calendar and results" %}</a>
+</section>
+
+<section class="section" aria-labelledby="next-matches-heading">
+  <h2 id="next-matches-heading">{% translate "Upcoming matches" %}</h2>
+  {% if next_matches %}
+    <ul class="match-list">
+      {% for match in next_matches %}
+        <li class="match-card">
+          <h2>{{ match.home_team.team }} <span aria-label="{% translate 'versus' %}">×</span> {{ match.away_team.team }}</h2>
+          <div class="match-meta">
+            {{ match.championship }} · {{ match.scheduled_at|date:"DATETIME_FORMAT" }}
+            ({{ match.scheduled_at|naturaltime }})
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>{% translate "There are no upcoming matches scheduled." %}</p>
+  {% endif %}
+</section>
+{% endblock %}

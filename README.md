@@ -37,7 +37,8 @@ Sistema web do campeonato regional de futebol Copa AMVI, disputado por cidades d
 
 O cronograma completo, com as tarefas semanais de cada dev, está em [`docs/PLANO.md`](docs/PLANO.md).
 
-- Páginas (views, formulários e templates): login, recuperação de senha, cadastros, súmula e portal público.
+- Páginas (views, formulários e templates): login, recuperação de senha, cadastros, súmula e páginas do portal público. A página inicial e o layout base já estão disponíveis.
+- O portal público inclui calendário/resultados em `/matches/`, com filtros por rodada e cidade e paginação.
 - Serializers, viewsets e permissões por papel (admin / mesário). Os routers da API estão vazios.
 - Camada de serviço (`apps/matches/services.py`) que, ao registrar um evento, deve:
   - atualizar o placar de `Match`;
