@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load i18n teams_tags %}
+
+{% block title %}{% translate "Teams" %}{% endblock %}
+
+{% block content %}
+{% include "teams/_subnav.html" %}
+
+<div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-0">{% translate "Teams" %}</h1>
+    <p class="text-body-secondary mb-0 small">{% translate "Clubs and municipal teams registered in the system." %}</p>
+  </div>
+  {% if can_manage %}
+    <a class="btn btn-primary" href="{% url 'teams:team_create' %}">+ {% translate "New team" %}</a>
+  {% endif %}
+</div>
+
+<form method="get" class="card card-body mb-4">
+  <div class="row g-2 align-items-end">
+    <div class="col-12 col-md-5">
+      <label class="form-label small fw-semibold" for="f-q">{% translate "Search" %}</label>
+      <input class="form-control" type="search" name="q" id="f-q" value="{{ search_query }}" placeholder="{% translate 'Search…' %}">
+    </div>
+    <div class="col-8 col-md-4">
+      <label class="form-label small fw-semibold" for="f-city">{% translate "city" %}</label>
+      <select class="form-select" name="city" id="f-city" onchange="this.form.submit()">
+        <option value="">{% translate "All" %}</option>
+        {% for city in cities %}
+          <option value="{{ city.pk }}"{% if filters.city == city.pk|stringformat:"s" %} selected{% endif %}>{{ city }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-4 col-md-3 d-flex gap-1">
+      <button class="btn btn-outline-primary flex-fill" type="submit">{% translate "Filter" %}</button>
+      {% if querystring %}
+        <a class="btn btn-link px-2" href="{% url 'teams:team_list' %}" title="{% translate 'Clear filters' %}" aria-label="{% translate 'Clear filters' %}">✕</a>
+      {% endif %}
+    </div>
+  </div>
+</form>
+
+<div class="card mb-4">
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead class="table-light small">
+        <tr>
+          <th>{% translate "team" as label %}{{ label|capfirst }}</th>
+          <th>{% translate "short name" as label %}{{ label|capfirst }}</th>
+          <th>{% translate "city" as label %}{{ label|capfirst }}</th>
+          <th>{% translate "home stadium" as label %}{{ label|capfirst }}</th>
+          <th>{% translate "status" as label %}{{ label|capfirst }}</th>
+          {% if can_manage %}<th class="text-end"></th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for team in teams %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                {% team_badge team size="2.25rem" %}
+                <div>
+                  <div class="fw-semibold">{{ team.name }}</div>
+                  {% if team.founded_year %}<div class="text-body-secondary small">{{ team.founded_year }}</div>{% endif %}
+                </div>
+              </div>
+            </td>
+            <td><span class="badge text-bg-secondary">{{ team.short_name }}</span></td>
+            <td>{{ team.city }}</td>
+            <td>{{ team.home_stadium|default:"—" }}</td>
+            <td>
+              {% if team.is_active %}
+                <span class="status-pill is-scheduled">{% translate "Active" %}</span>
+              {% else %}
+                <span class="status-pill is-finished">{% translate "Inactive" %}</span>
+              {% endif %}
+            </td>
+            {% if can_manage %}
+              <td class="text-end">
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'teams:team_update' team.pk %}">✏️ {% translate "Edit" %}</a>
+              </td>
+            {% endif %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-body-secondary py-5">{% translate "No teams found." %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% include "includes/pagination.html" %}
+{% endblock %}

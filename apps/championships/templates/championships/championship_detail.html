@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load i18n teams_tags %}
+
+{% block title %}{{ championship }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb small">
+    <li class="breadcrumb-item"><a href="{% url 'championships:list' %}">{% translate "Championships" %}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ championship }}</li>
+  </ol>
+</nav>
+
+<div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+  <div>
+    <div class="d-flex align-items-center gap-2">
+      <h1 class="h3 mb-0">🏆 {{ championship }}</h1>
+      <span class="status-pill {% if championship.status == 'ONGOING' %}is-live{% elif championship.status == 'FINISHED' %}is-finished{% else %}is-scheduled{% endif %}">
+        {{ championship.get_status_display }}
+      </span>
+    </div>
+    <p class="text-body-secondary small mb-0">
+      {% if championship.start_date %}{{ championship.start_date|date:"d/m/Y" }}{% endif %}
+      {% if championship.end_date %}– {{ championship.end_date|date:"d/m/Y" }} · {% endif %}
+      {% blocktranslate with max=championship.max_players_per_team %}Up to {{ max }} players per team{% endblocktranslate %}
+    </p>
+  </div>
+  {% if can_manage %}
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-primary" href="{% url 'championships:teams' championship.pk %}">🛡️ {% translate "Enroll teams" %}</a>
+      <a class="btn btn-outline-primary" href="{% url 'matches:create' championship.pk %}">+ {% translate "New match" %}</a>
+      <a class="btn btn-outline-secondary" href="{% url 'championships:update' championship.pk %}">✏️ {% translate "Edit" %}</a>
+    </div>
+  {% endif %}
+</div>
+
+<div class="card mb-4">
+  <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+    <h2 class="h6 fw-bold mb-0">{% translate "Enrolled teams and standings" %}</h2>
+    <span class="text-body-secondary small">{{ team_entries|length }} {% translate "teams" %}</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead class="table-light small">
+        <tr>
+          <th style="width: 3.5rem">#</th>
+          <th>{% translate "team" as label %}{{ label|capfirst }}</th>
+          <th>{% translate "group" as label %}{{ label|capfirst }}</th>
+          <th class="text-center" title="{% translate 'points' %}">PTS</th>
+          <th class="text-center" title="{% translate 'played' %}">J</th>
+          <th class="text-center" title="{% translate 'wins' %}">V</th>
+          <th class="text-center" title="{% translate 'draws' %}">E</th>
+          <th class="text-center" title="{% translate 'losses' %}">D</th>
+          <th class="text-center" title="{% translate 'goals for' %}">GP</th>
+          <th class="text-center" title="{% translate 'goals against' %}">GC</th>
+          <th class="text-center">SG</th>
+          <th class="text-center">{% translate "Players" %}</th>
+          <th class="text-end"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in team_entries %}
+          <tr{% if entry.is_withdrawn %} class="opacity-50"{% endif %}>
+            <td class="fw-bold text-body-secondary">{{ entry.rank|default:forloop.counter }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                {% team_badge entry.team size="2rem" %}
+                <div>
+                  <div class="fw-semibold">{{ entry.team.name }}</div>
+                  <div class="text-body-secondary small">{{ entry.team.city }}</div>
+                </div>
+                {% if entry.is_withdrawn %}
+                  <span class="badge text-bg-warning">{% translate "withdrawn" %}</span>
+                {% endif %}
+              </div>
+            </td>
+            <td>{% if entry.group %}<span class="badge text-bg-light border">{{ entry.group }}</span>{% else %}—{% endif %}</td>
+            <td class="text-center fw-bold">{{ entry.points }}</td>
+            <td class="text-center">{{ entry.played }}</td>
+            <td class="text-center">{{ entry.wins }}</td>
+            <td class="text-center">{{ entry.draws }}</td>
+            <td class="text-center">{{ entry.losses }}</td>
+            <td class="text-center">{{ entry.goals_for }}</td>
+            <td class="text-center">{{ entry.goals_against }}</td>
+            <td class="text-center">{{ entry.goal_difference }}</td>
+            <td class="text-center">
+              <span class="badge rounded-pill text-bg-secondary">{{ entry.active_players }} / {{ championship.max_players_per_team }}</span>
+            </td>
+            <td class="text-end">
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'championships:roster' championship.pk entry.pk %}">
+                🏃 {% translate "Players" %}
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="13" class="text-center text-body-secondary py-5">
+              {% translate "No teams enrolled in this championship yet." %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

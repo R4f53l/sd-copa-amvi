@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% if object %}{% translate "Edit championship" %}{% else %}{% translate "New championship" %}{% endif %}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb small">
+    <li class="breadcrumb-item"><a href="{% url 'championships:list' %}">{% translate "Championships" %}</a></li>
+    {% if object %}
+      <li class="breadcrumb-item"><a href="{% url 'championships:detail' object.pk %}">{{ object }}</a></li>
+    {% endif %}
+    <li class="breadcrumb-item active" aria-current="page">{% if object %}{% translate "Edit championship" %}{% else %}{% translate "New championship" %}{% endif %}</li>
+  </ol>
+</nav>
+
+<div class="page-header mb-3">
+  <h1 class="h3 mb-0">{% if object %}{% translate "Edit championship" %}{% else %}{% translate "New championship" %}{% endif %}</h1>
+</div>
+
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+  {% include "includes/form_errors.html" %}
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="section-title mb-3">{% translate "General" %}</div>
+          <div class="row">
+            <div class="col-md-8">{% include "includes/field.html" with field=form.name %}</div>
+            <div class="col-md-4">{% include "includes/field.html" with field=form.season %}</div>
+            <div class="col-md-6">{% include "includes/field.html" with field=form.slug %}</div>
+            <div class="col-md-6">{% include "includes/field.html" with field=form.status %}</div>
+            <div class="col-md-6">{% include "includes/field.html" with field=form.start_date %}</div>
+            <div class="col-md-6">{% include "includes/field.html" with field=form.end_date %}</div>
+            <div class="col-12">{% include "includes/field.html" with field=form.description %}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="section-title mb-3">{% translate "Regulation" %}</div>
+          {% include "includes/field.html" with field=form.regulation %}
+          {% include "includes/field.html" with field=form.regulation_file %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="section-title mb-3">{% translate "Rules" %}</div>
+          <div class="row">
+            <div class="col-4">{% include "includes/field.html" with field=form.points_per_win %}</div>
+            <div class="col-4">{% include "includes/field.html" with field=form.points_per_draw %}</div>
+            <div class="col-4">{% include "includes/field.html" with field=form.points_per_loss %}</div>
+            <div class="col-12">{% include "includes/field.html" with field=form.yellow_cards_for_suspension %}</div>
+            <div class="col-12">{% include "includes/field.html" with field=form.max_players_per_team %}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-grid gap-2">
+        <button class="btn btn-primary btn-lg" type="submit">✔ {% translate "Save" %}</button>
+        <a class="btn btn-outline-secondary" href="{% if object %}{% url 'championships:detail' object.pk %}{% else %}{% url 'championships:list' %}{% endif %}">{% translate "Cancel" %}</a>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}
