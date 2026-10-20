@@ -90,10 +90,10 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [x] Lista de jogos por rodada
 
 **Dev 4**
-- [ ] `base.html`: layout, menu e exibição das mensagens
-- [ ] Ativar o `django.contrib.humanize`
-- [ ] Página inicial pública
-- [ ] Lista de jogos e resultados, com filtros por rodada e cidade e paginação
+- [x] `base.html`: layout, menu e exibição das mensagens
+- [x] Ativar o `django.contrib.humanize`
+- [x] Página inicial pública
+- [x] Lista de jogos e resultados, com filtros por rodada e cidade e paginação
 
 ### Semana 2 (09–15/10) — 12/10 é feriado
 

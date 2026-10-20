@@ -121,7 +121,7 @@ AUTH_USER_MODEL = "accounts.User"
 # The website (public portal and table official panel) uses session login.
 # JWT is only for external API clients.
 LOGIN_URL = "accounts:login"
-LOGIN_REDIRECT_URL = "matches:list"  # back-office panel
+LOGIN_REDIRECT_URL = "matches:list"
 # Back to the login page until the public home page exists (then "/").
 LOGOUT_REDIRECT_URL = "accounts:login"
 

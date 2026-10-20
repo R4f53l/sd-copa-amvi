@@ -20,7 +20,7 @@ class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 
 
 # base paginada com filtro de busca e preservacao de querystring
-class SearchableListView(LoginRequiredMixin, ListView):
+class SearchableListView(ListView):
     paginate_by = 20
     search_param = "q"
 

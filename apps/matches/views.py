@@ -1,7 +1,6 @@
 """Server-rendered views (Django templates) for the matches app."""
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db.models import Prefetch, Q
 from django.shortcuts import get_object_or_404, redirect
@@ -17,6 +16,7 @@ from .forms import (
     CancelEventForm,
     LineupFormSet,
     MatchEventForm,
+    MatchFilterForm,
     MatchForm,
 )
 from .models import EventType, Match, MatchEvent, MatchEventParticipant
@@ -24,6 +24,7 @@ from .permissions import (
     AdminRequiredMixin,
     MatchOfficialRequiredMixin,
     can_manage_matches,
+    can_officiate,
 )
 
 # ---------------------------------------------------------------------------
@@ -31,40 +32,54 @@ from .permissions import (
 # ---------------------------------------------------------------------------
 
 
-class MatchListView(LoginRequiredMixin, ListView):
+class MatchListView(ListView):
     """
-    Back-office fixture list, grouped by round. Administrators see every
-    match; table officials only the matches assigned to them.
+    Public match calendar and results. The panel subclass narrows this same
+    page to the logged-in official's matches and exposes management actions.
     """
 
     template_name = "matches/match_list.html"
     context_object_name = "matches"
-    paginate_by = 20
 
-    def get_queryset(self):
+    @property
+    def public_mode(self):
+        return not self.request.user.is_authenticated
+
+    def get_paginate_by(self, queryset):
+        return 10 if self.public_mode else 20
+
+    def get_base_queryset(self):
         queryset = Match.objects.select_related(
             "championship",
-            "home_team__team",
-            "away_team__team",
+            "home_team__team__city",
+            "away_team__team__city",
             "stadium__city",
-        ).order_by("championship", "round_number", "scheduled_at")
-
-        if not can_manage_matches(self.request.user):
+        )
+        if self.public_mode:
+            queryset = queryset.exclude(status=Match.Status.CANCELED)
+        elif not can_manage_matches(self.request.user):
             queryset = queryset.filter(table_officials=self.request.user)
+        return queryset
 
-        params = self.request.GET
-        if championship := params.get("championship"):
-            queryset = queryset.filter(championship_id=championship)
-        if round_number := params.get("round"):
-            if round_number.isdigit():
+    def get_queryset(self):
+        queryset = self.get_base_queryset().order_by(
+            "championship", "round_number", "scheduled_at"
+        )
+
+        form = MatchFilterForm(self.request.GET)
+        self.match_filter_form = form
+        if form.is_valid():
+            if championship := form.cleaned_data["championship"]:
+                queryset = queryset.filter(championship=championship)
+            if round_number := form.cleaned_data["round"]:
                 queryset = queryset.filter(round_number=round_number)
-        if status := params.get("status"):
-            queryset = queryset.filter(status=status)
-        if search := params.get("q", "").strip():
-            queryset = queryset.filter(
-                Q(home_team__team__name__icontains=search)
-                | Q(away_team__team__name__icontains=search)
-            )
+            if status := form.cleaned_data["status"]:
+                queryset = queryset.filter(status=status)
+            if search := form.cleaned_data["q"].strip():
+                queryset = queryset.filter(
+                    Q(home_team__team__name__icontains=search)
+                    | Q(away_team__team__name__icontains=search)
+                )
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -73,10 +88,11 @@ class MatchListView(LoginRequiredMixin, ListView):
         query.pop("page", None)
         context.update(
             championships=Championship.objects.all(),
-            statuses=Match.Status.choices,
             filters=self.request.GET,
             querystring=query.urlencode(),
             can_manage=can_manage_matches(self.request.user),
+            public_mode=self.public_mode,
+            form=self.match_filter_form,
         )
         return context
 
@@ -195,6 +211,11 @@ class MatchSheetView(MatchOfficialRequiredMixin, TemplateView):
 
     template_name = "matches/match_sheet.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.method in {"GET", "HEAD", "OPTIONS"}:
+            return TemplateView.dispatch(self, request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
+
     def get_event_type(self):
         code = self.request.GET.get("event_type") or self.request.POST.get(
             "event_type"
@@ -242,6 +263,7 @@ class MatchSheetView(MatchOfficialRequiredMixin, TemplateView):
             ],
             locked=services.is_locked(match),
             can_manage=can_manage_matches(self.request.user),
+            can_officiate=can_officiate(self.request.user, match),
             event_types=EventType.objects.filter(is_active=True),
             event_type=event_type,
             event_form=kwargs.get("event_form")

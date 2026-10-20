@@ -64,7 +64,7 @@
           <div class="d-flex justify-content-between align-items-center pt-2 border-top">
             <span class="small fw-semibold">🛡️ {{ championship.team_count }} {% translate "teams" %}</span>
             <div class="d-flex gap-2">
-              <a class="btn btn-sm btn-primary" href="{% url 'championships:detail' championship.pk %}">{% translate "Manage" %}</a>
+              <a class="btn btn-sm btn-primary" href="{% url 'championships:detail' championship.pk %}">{% if can_manage %}{% translate "Manage" %}{% else %}{% translate "View details" %}{% endif %}</a>
               {% if can_manage %}
                 <a class="btn btn-sm btn-outline-secondary" href="{% url 'championships:update' championship.pk %}">✏️ {% translate "Edit" %}</a>
               {% endif %}
