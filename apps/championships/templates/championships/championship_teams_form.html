@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load i18n teams_tags %}
+
+{% block title %}{% translate "Enroll teams" %} · {{ championship }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb small">
+    <li class="breadcrumb-item"><a href="{% url 'championships:list' %}">{% translate "Championships" %}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'championships:detail' championship.pk %}">{{ championship }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{% translate "Enroll teams" %}</li>
+  </ol>
+</nav>
+
+<div class="page-header mb-3">
+  <h1 class="h3 mb-0">{% translate "Enroll teams" %} · {{ championship }}</h1>
+  <p class="text-body-secondary small mb-0">{% translate "Select the participating teams and assign their group." %}</p>
+</div>
+
+{% for error in formset.non_form_errors %}
+  <div class="alert alert-danger">{{ error }}</div>
+{% endfor %}
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ formset.management_form }}
+
+  <div class="card mb-4">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead class="table-light small">
+          <tr>
+            <th class="text-center" style="width: 4.5rem">{% translate "Enrolled" %}</th>
+            <th>{% translate "team" as label %}{{ label|capfirst }}</th>
+            <th style="width: 8rem">{% translate "group" as label %}{{ label|capfirst }}</th>
+            <th style="width: 9rem">{% translate "points deducted" as label %}{{ label|capfirst }}</th>
+            <th class="text-center" style="width: 7rem">{% translate "withdrawn" as label %}{{ label|capfirst }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form, team in formset.rows %}
+            <tr>
+              <td class="text-center">
+                {{ form.team_id }}
+                {{ form.enrolled }}
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  {% team_badge team size="2rem" %}
+                  <div>
+                    <div class="fw-semibold">{{ team.name }} <span class="text-body-secondary small">({{ team.short_name }})</span></div>
+                    <div class="text-body-secondary small">{{ team.city }}</div>
+                  </div>
+                </div>
+                {% for error in form.non_field_errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+              </td>
+              <td>
+                {{ form.group }}
+                {% for error in form.group.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+              </td>
+              <td>
+                {{ form.points_deducted }}
+                {% for error in form.points_deducted.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+              </td>
+              <td class="text-center">
+                {{ form.is_withdrawn }}
+                {% for error in form.is_withdrawn.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="text-center text-body-secondary py-5">{% translate "No teams available." %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'championships:detail' championship.pk %}">{% translate "Cancel" %}</a>
+    <button class="btn btn-primary" type="submit">✔ {% translate "Save" %}</button>
+  </div>
+</form>
+{% endblock %}

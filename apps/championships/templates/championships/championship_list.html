@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Championships" %}{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-0">{% translate "Championships" %}</h1>
+    <p class="text-body-secondary mb-0 small">{% translate "Editions, rules, enrolled teams and player rosters." %}</p>
+  </div>
+  {% if can_manage %}
+    <a class="btn btn-primary" href="{% url 'championships:create' %}">+ {% translate "New championship" %}</a>
+  {% endif %}
+</div>
+
+<form method="get" class="card card-body mb-4">
+  <div class="row g-2 align-items-end">
+    <div class="col-12 col-md-5">
+      <label class="form-label small fw-semibold" for="f-q">{% translate "Search" %}</label>
+      <input class="form-control" type="search" name="q" id="f-q" value="{{ search_query }}" placeholder="{% translate 'Search…' %}">
+    </div>
+    <div class="col-8 col-md-4">
+      <label class="form-label small fw-semibold" for="f-status">{% translate "status" %}</label>
+      <select class="form-select" name="status" id="f-status" onchange="this.form.submit()">
+        <option value="">{% translate "All" %}</option>
+        {% for value, label in statuses %}
+          <option value="{{ value }}"{% if filters.status == value %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-4 col-md-3 d-flex gap-1">
+      <button class="btn btn-outline-primary flex-fill" type="submit">{% translate "Filter" %}</button>
+      {% if querystring %}
+        <a class="btn btn-link px-2" href="{% url 'championships:list' %}" title="{% translate 'Clear filters' %}" aria-label="{% translate 'Clear filters' %}">✕</a>
+      {% endif %}
+    </div>
+  </div>
+</form>
+
+<div class="row g-3 mb-4">
+  {% for championship in championships %}
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+              <h2 class="h5 fw-bold mb-0">
+                <a class="text-reset text-decoration-none" href="{% url 'championships:detail' championship.pk %}">🏆 {{ championship.name }}</a>
+              </h2>
+              <span class="status-pill {% if championship.status == 'ONGOING' %}is-live{% elif championship.status == 'FINISHED' %}is-finished{% else %}is-scheduled{% endif %}">
+                {{ championship.get_status_display }}
+              </span>
+            </div>
+            <div class="text-body-secondary small mb-2">
+              {% translate "season"|capfirst %}: <strong>{{ championship.season }}</strong>
+              {% if championship.start_date %} · {{ championship.start_date|date:"d/m/Y" }}{% endif %}
+              {% if championship.end_date %}– {{ championship.end_date|date:"d/m/Y" }}{% endif %}
+            </div>
+            {% if championship.description %}
+              <p class="small text-body-secondary mb-3">{{ championship.description|truncatewords:25 }}</p>
+            {% endif %}
+          </div>
+          <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+            <span class="small fw-semibold">🛡️ {{ championship.team_count }} {% translate "teams" %}</span>
+            <div class="d-flex gap-2">
+              <a class="btn btn-sm btn-primary" href="{% url 'championships:detail' championship.pk %}">{% translate "Manage" %}</a>
+              {% if can_manage %}
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'championships:update' championship.pk %}">✏️ {% translate "Edit" %}</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12">
+      <div class="card card-body text-center py-5 text-body-secondary">
+        {% translate "No championships found." %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% include "includes/pagination.html" %}
+{% endblock %}
