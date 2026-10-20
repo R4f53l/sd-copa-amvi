@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% if object %}{% translate "Edit match" %}{% else %}{% translate "New match" %}{% endif %}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb small">
+    <li class="breadcrumb-item"><a href="{% url 'matches:list' %}">{% translate "Matches" %}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{% if object %}{% translate "Edit match" %}{% else %}{% translate "New match" %}{% endif %}</li>
+  </ol>
+</nav>
+
+<div class="page-header mb-3">
+  <h1 class="h3 mb-0">{% if object %}{% translate "Edit match" %}{% else %}{% translate "New match" %}{% endif %}</h1>
+  <p class="text-body-secondary small mb-0">🏆 {{ championship }}{% if championship.start_date and championship.end_date %} · {{ championship.start_date|date:"d/m/Y" }} – {{ championship.end_date|date:"d/m/Y" }}{% endif %}</p>
+</div>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% include "includes/form_errors.html" %}
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="section-title mb-3">{% translate "Fixture" %}</div>
+          <div class="row">
+            <div class="col-md-5">{% include "includes/field.html" with field=form.home_team %}</div>
+            <div class="col-md-2 d-none d-md-flex justify-content-center align-items-center fw-bold fs-4 text-body-secondary mb-3 pt-4">×</div>
+            <div class="col-md-5">{% include "includes/field.html" with field=form.away_team %}</div>
+            <div class="col-md-6">{% include "includes/field.html" with field=form.stage %}</div>
+            <div class="col-md-6">{% include "includes/field.html" with field=form.round_number %}</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="section-title mb-3">{% translate "When and where" %}</div>
+          <div class="row">
+            <div class="col-md-6">{% include "includes/field.html" with field=form.scheduled_at %}</div>
+            <div class="col-md-6">{% include "includes/field.html" with field=form.stadium %}</div>
+            {% if form.status %}
+              <div class="col-md-6">{% include "includes/field.html" with field=form.status %}</div>
+            {% endif %}
+            <div class="col-md-6">{% include "includes/field.html" with field=form.referee_name %}</div>
+            <div class="col-12">{% include "includes/field.html" with field=form.streaming_url %}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="section-title mb-3">{% translate "Table officials" %}</div>
+          {% include "includes/field.html" with field=form.table_officials hide_label=True %}
+        </div>
+      </div>
+      <div class="d-grid gap-2">
+        <button class="btn btn-primary btn-lg" type="submit">✔ {% translate "Save" %}</button>
+        <a class="btn btn-outline-secondary" href="{% if object %}{% url 'matches:sheet' object.pk %}{% else %}{% url 'matches:list' %}{% endif %}">{% translate "Cancel" %}</a>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}

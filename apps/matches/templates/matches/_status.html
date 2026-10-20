@@ -1,0 +1,1 @@
+{% load matches_tags %}<span class="status-pill {{ match|status_class }}">{% if match.is_live %}<span class="live-dot" aria-hidden="true"></span>{% endif %}{{ match.get_status_display }}</span>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Log in" %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-md-4">
+  <div class="col-sm-10 col-md-8 col-lg-7">
+    <div class="card overflow-hidden">
+      <div class="row g-0">
+        <div class="col-md-5 auth-hero d-flex flex-column justify-content-center p-4">
+          <div class="display-6 mb-2" aria-hidden="true">⚽</div>
+          <h1 class="h4 fw-bold">Copa AMVI</h1>
+          <p class="mb-0 small opacity-75">{% translate "Back-office for administrators and table officials." %}</p>
+        </div>
+        <div class="col-md-7 p-4 p-lg-5">
+          <h2 class="h5 fw-bold mb-4">{% translate "Log in" %}</h2>
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger small">{% translate "Incorrect username or password." %}</div>
+          {% endif %}
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <div class="form-floating mb-3">
+              <input class="form-control" type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}"
+                     value="{{ form.username.value|default:'' }}" placeholder="{{ form.username.label }}"
+                     autocomplete="username" autocapitalize="none" autofocus required>
+              <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+            </div>
+            <div class="form-floating mb-4">
+              <input class="form-control" type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}"
+                     placeholder="{{ form.password.label }}" autocomplete="current-password" required>
+              <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+            </div>
+            <button class="btn btn-primary btn-lg w-100" type="submit">{% translate "Log in" %}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
