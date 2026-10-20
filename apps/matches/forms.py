@@ -3,36 +3,41 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from apps.championships.models import Championship
 from apps.shared.forms import BootstrapFormMixin
-from apps.teams.models import City, Player
+from apps.teams.models import Player
 
 from . import services
 from .models import EventType, Lineup, Match, MatchEvent
 
 
-class PublicMatchFilterForm(forms.Form):
-    round_number = forms.TypedChoiceField(
+class MatchFilterForm(forms.Form):
+    championship = forms.ModelChoiceField(
+        label=_("Championship"),
+        queryset=Championship.objects.order_by("-season", "name"),
+        required=False,
+        empty_label=_("All"),
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    round = forms.IntegerField(
         label=_("Round"),
-        choices=(),
-        coerce=int,
-        empty_value=None,
         required=False,
+        min_value=1,
+        widget=forms.NumberInput(attrs={"class": "form-control", "min": 1}),
     )
-    city = forms.ModelChoiceField(
-        label=_("City"),
-        queryset=City.objects.none(),
+    status = forms.ChoiceField(
+        label=_("Status"),
+        choices=[("", _("All")), *Match.Status.choices],
         required=False,
-        empty_label=_("All cities"),
+        widget=forms.Select(attrs={"class": "form-select"}),
     )
-
-    def __init__(self, *args, round_numbers=(), cities=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["round_number"].choices = [
-            ("", _("All rounds")),
-            *((number, number) for number in round_numbers),
-        ]
-        if cities is not None:
-            self.fields["city"].queryset = cities
+    q = forms.CharField(
+        label=_("Team"),
+        required=False,
+        widget=forms.SearchInput(
+            attrs={"class": "form-control", "placeholder": _("Search…")}
+        ),
+    )
 
 DATETIME_LOCAL_FORMAT = "%Y-%m-%dT%H:%M"
 

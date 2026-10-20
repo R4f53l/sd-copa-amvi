@@ -6,7 +6,7 @@
 {% block content %}
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb small">
-    <li class="breadcrumb-item"><a href="{% url 'matches:panel' %}">{% translate "Matches" %}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'matches:list' %}">{% translate "Matches" %}</a></li>
     <li class="breadcrumb-item"><a href="{% url 'matches:sheet' match.pk %}">{{ match }}</a></li>
     <li class="breadcrumb-item active" aria-current="page">{% translate "Lineup" %}</li>
   </ol>

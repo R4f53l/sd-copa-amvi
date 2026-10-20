@@ -6,7 +6,7 @@
 {% block content %}
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb small">
-    <li class="breadcrumb-item"><a href="{% url 'matches:panel' %}">{% translate "Matches" %}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'matches:list' %}">{% translate "Matches" %}</a></li>
     <li class="breadcrumb-item active" aria-current="page">{% if object %}{% translate "Edit match" %}{% else %}{% translate "New match" %}{% endif %}</li>
   </ol>
 </nav>
@@ -57,7 +57,7 @@
       </div>
       <div class="d-grid gap-2">
         <button class="btn btn-primary btn-lg" type="submit">✔ {% translate "Save" %}</button>
-        <a class="btn btn-outline-secondary" href="{% if object %}{% url 'matches:sheet' object.pk %}{% else %}{% url 'matches:panel' %}{% endif %}">{% translate "Cancel" %}</a>
+        <a class="btn btn-outline-secondary" href="{% if object %}{% url 'matches:sheet' object.pk %}{% else %}{% url 'matches:list' %}{% endif %}">{% translate "Cancel" %}</a>
       </div>
     </div>
   </div>

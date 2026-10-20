@@ -27,26 +27,25 @@ Sistema web do campeonato regional de futebol Copa AMVI, disputado por cidades d
   - Channels com Redis quando `REDIS_URL` está definido; senão, uma camada em memória.
   - Idiomas pt-BR (padrão) e inglês, fuso `America/Fortaleza` (Piauí) e CORS configurável.
 - **ASGI** (`config/asgi.py`): recebe HTTP e WebSocket. O WebSocket usa a mesma sessão de login do site. As rotas de WebSocket vêm de `apps/matches/routing.py`, que ainda está vazio.
-- **Rotas**: páginas na raiz do site (`/teams/`, `/matches/`…, ainda vazias), API em `/api/v1/` com o login JWT, e troca de idioma em `/i18n/setlang/`.
+- **Rotas**: a raiz redireciona para `/matches/`, que apresenta o calendário público a visitantes e as ferramentas do painel a usuários autenticados. Campeonatos e times têm páginas públicas de leitura; ações de administração exigem login e papel apropriado. A API está em `/api/v1/`, com login JWT, e a troca de idioma em `/i18n/setlang/`.
 - **Tradução pt-BR completa** dos modelos: nomes, campos, opções, textos de ajuda e mensagens de validação (veja [Tradução](#tradução-i18n)).
 - **Documentação OpenAPI 3** com Swagger UI e ReDoc (veja [Documentação da API](#documentação-da-api-swagger)).
 - **Modelagem completa dos 4 domínios**, com migrations iniciais geradas (detalhes abaixo).
 - **Catálogo de eventos inicial**: a migration `matches/0002` cadastra os tipos e papéis de evento da súmula (veja [Catálogo de eventos](#catálogo-de-eventos)).
 
-- **Painel de jogos** (`/matches/`, exige login):
+- **Painel de jogos** (`/matches/`, opções administrativas para usuários autenticados):
   - calendário agrupado por campeonato e rodada, com filtros e paginação; administradores veem todos os jogos, mesários só os designados a eles;
   - cadastro e edição de jogos (só administradores), com validação de times do campeonato, mandante ≠ visitante e data dentro do período do campeonato;
   - escalação por time: entre 7 e 11 titulares, reservas, um capitão, números de camisa únicos e só jogadores com inscrição ativa;
   - súmula: registro de eventos com os campos de jogador conforme o tipo (autor, assistência, entra/sai…), cancelamento com motivo e **placar recalculado automaticamente**, incluindo a disputa de pênaltis;
   - as regras ficam em `apps/matches/services.py`, para a API reutilizar.
-- **Login por sessão** (`/accounts/login/`) e `templates/base.html` mínimos, criados para o painel funcionar. Recuperação de senha e layout definitivo continuam com os donos dessas tarefas no plano.
+- **Login por sessão** (`/accounts/login/`) e layout compartilhado, com opções administrativas exibidas apenas para usuários autorizados.
 
 ### 🚧 Ainda não implementado
 
 O cronograma completo, com as tarefas semanais de cada dev, está em [`docs/PLANO.md`](docs/PLANO.md).
 
-- Páginas ainda pendentes (views, formulários e templates): recuperação de senha e cadastros de times e campeonatos.
-- O portal público inclui calendário/resultados em `/matches/`, com filtros por rodada e cidade e paginação. O painel autenticado fica em `/matches/panel/`.
+- Páginas (views, formulários e templates): recuperação de senha, cadastros de times e campeonatos e portal público. O painel de jogos já existe (veja abaixo).
 - Serializers, viewsets e permissões por papel (admin / mesário). Os routers da API estão vazios.
 - Camada de serviço (`apps/matches/services.py`) que, ao registrar um evento, deve:
   - atualizar o placar de `Match`;

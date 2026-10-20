@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import RedirectView
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -11,8 +12,6 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-
-from config.views import home
 
 # REST API for external systems. The website itself uses the web routes.
 api_v1 = [
@@ -35,7 +34,11 @@ web = [
 ]
 
 urlpatterns = [
-    path("", home, name="home"),
+    path(
+        "",
+        RedirectView.as_view(pattern_name="matches:list", permanent=False),
+        name="home",
+    ),
     path("admin/", admin.site.urls),
     path("i18n/", include("django.conf.urls.i18n")),
     path("api/v1/", include(api_v1)),

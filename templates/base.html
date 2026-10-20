@@ -15,7 +15,7 @@
   {% with section=request.resolver_match.namespace %}
   <nav class="navbar navbar-expand-md navbar-dark amvi-navbar mb-4">
     <div class="container">
-      <a class="navbar-brand amvi-brand" href="{% if user.is_authenticated %}{% url 'matches:panel' %}{% else %}/{% endif %}">
+      <a class="navbar-brand amvi-brand" href="{% url 'matches:list' %}">
         <span class="amvi-brand-mark" aria-hidden="true">⚽</span> Copa AMVI
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav"
@@ -24,19 +24,19 @@
       </button>
       <div class="collapse navbar-collapse" id="main-nav">
         <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link{% if section == 'matches' %} active{% endif %}"{% if section == 'matches' %} aria-current="page"{% endif %}
+               href="{% url 'matches:list' %}">{% translate "Matches" %}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{% if section == 'championships' %} active{% endif %}"{% if section == 'championships' %} aria-current="page"{% endif %}
+               href="{% url 'championships:list' %}">{% translate "Championships" %}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{% if section == 'teams' %} active{% endif %}"{% if section == 'teams' %} aria-current="page"{% endif %}
+               href="{% url 'teams:team_list' %}">{% translate "Teams" %}</a>
+          </li>
           {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link{% if section == 'matches' %} active{% endif %}"{% if section == 'matches' %} aria-current="page"{% endif %}
-                 href="{% url 'matches:panel' %}">{% translate "Matches" %}</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link{% if section == 'championships' %} active{% endif %}"{% if section == 'championships' %} aria-current="page"{% endif %}
-                 href="{% url 'championships:list' %}">{% translate "Championships" %}</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link{% if section == 'teams' %} active{% endif %}"{% if section == 'teams' %} aria-current="page"{% endif %}
-                 href="{% url 'teams:team_list' %}">{% translate "Teams" %}</a>
-            </li>
             {% if user.is_staff %}
               <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">{% translate "Admin" %}</a></li>
             {% endif %}

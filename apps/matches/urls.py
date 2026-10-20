@@ -5,8 +5,7 @@ from . import views
 app_name = "matches"
 
 urlpatterns = [
-    path("", views.public_match_list, name="list"),
-    path("panel/", views.MatchListView.as_view(), name="panel"),
+    path("", views.MatchListView.as_view(), name="list"),
     path(
         "new/<uuid:championship_pk>/",
         views.MatchCreateView.as_view(),

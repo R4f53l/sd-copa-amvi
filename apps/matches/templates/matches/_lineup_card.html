@@ -3,7 +3,7 @@
   <div class="card h-100">
     <div class="card-header bg-transparent d-flex justify-content-between align-items-center gap-2">
       <span class="d-flex align-items-center gap-2 fw-semibold text-truncate">{% team_badge team size="1.75rem" %}{{ team.team.name }}</span>
-      {% if not locked %}
+      {% if can_officiate and not locked %}
         <a class="btn btn-sm {% if lineup %}btn-outline-primary{% else %}btn-primary{% endif %} text-nowrap" href="{% url 'matches:lineup' match.pk side %}">
           {% if lineup %}{% translate "Edit" %}{% else %}+ {% translate "Define" %}{% endif %}
         </a>

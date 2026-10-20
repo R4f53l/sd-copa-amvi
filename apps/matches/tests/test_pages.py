@@ -161,15 +161,16 @@ class MatchPagesTestCase(TestCase):
 
 
 class PermissionTests(MatchPagesTestCase):
-    def test_anonymous_is_redirected_to_login(self):
-        for url in (
-            reverse("matches:panel"),
-            reverse("matches:sheet", args=[self.match.pk]),
-        ):
-            response = self.client.get(url)
-            self.assertRedirects(
-                response, f"{reverse('accounts:login')}?next={url}"
-            )
+    def test_anonymous_can_read_sheet_but_cannot_post_events(self):
+        url = reverse("matches:sheet", args=[self.match.pk])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["can_officiate"])
+        post_response = self.client.post(url, {"event_type": "goal"})
+        self.assertRedirects(
+            post_response, f"{reverse('accounts:login')}?next={url}"
+        )
 
     def test_assigned_official_can_run_the_match_sheet(self):
         self.login(self.official)
@@ -185,7 +186,9 @@ class PermissionTests(MatchPagesTestCase):
         response = self.client.get(
             reverse("matches:sheet", args=[self.match.pk])
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["can_officiate"])
+        self.assertNotContains(response, "Record event")
 
     def test_only_admins_schedule_matches(self):
         self.login(self.official)
@@ -196,11 +199,11 @@ class PermissionTests(MatchPagesTestCase):
 
     def test_officials_only_see_their_matches(self):
         self.login(self.other_official)
-        response = self.client.get(reverse("matches:panel"))
+        response = self.client.get(reverse("matches:list"))
         self.assertEqual(list(response.context["matches"]), [])
 
         self.login(self.official)
-        response = self.client.get(reverse("matches:panel"))
+        response = self.client.get(reverse("matches:list"))
         self.assertEqual(list(response.context["matches"]), [self.match])
 
 
@@ -257,7 +260,7 @@ class MatchFormTests(MatchPagesTestCase):
             round_number=2,
             scheduled_at=aware(2026, 10, 27, 16, 0),
         )
-        response = self.client.get(reverse("matches:panel"), {"round": "2"})
+        response = self.client.get(reverse("matches:list"), {"round": "2"})
         self.assertEqual(len(response.context["matches"]), 1)
         self.assertContains(response, "Rodada 2")
 
