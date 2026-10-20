@@ -1,134 +1,192 @@
 {% extends "base.html" %}
-{% load i18n humanize %}
+{% load i18n humanize static teams_tags matches_tags %}
 
 {% block title %}{% translate "Match sheet" %} · {{ match }}{% endblock %}
 
 {% block content %}
 <nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
+  <ol class="breadcrumb small">
     <li class="breadcrumb-item"><a href="{% url 'matches:list' %}">{% translate "Matches" %}</a></li>
-    <li class="breadcrumb-item active" aria-current="page">{{ match }}</li>
+    <li class="breadcrumb-item active" aria-current="page">{% translate "Match sheet" %}</li>
   </ol>
 </nav>
 
-{# Scoreboard #}
-<div class="card shadow-sm mb-4">
-  <div class="card-body text-center">
-    <div class="small text-body-secondary mb-2">
-      {{ match.championship }}
-      {% if match.round_number %} · {% blocktranslate with number=match.round_number %}Round {{ number }}{% endblocktranslate %}{% endif %}
-      · {{ match.scheduled_at|naturalday:"d/m/Y"|capfirst }} {{ match.scheduled_at|time:"H:i" }}
-      {% if match.stadium %} · {{ match.stadium }}{% endif %}
+{# --- Scoreboard ---------------------------------------------------------- #}
+<div class="card scoreboard mb-4">
+  <div class="card-body p-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 meta mb-3">
+      <span>
+        🏆 {{ match.championship }}{% if match.round_number %} · {% blocktranslate with number=match.round_number %}Round {{ number }}{% endblocktranslate %}{% endif %}
+      </span>
+      <span>📅 {{ match.scheduled_at|naturalday:"D, d/m"|capfirst }} · {{ match.scheduled_at|time:"H:i" }}{% if match.stadium %} · 📍 {{ match.stadium }}{% endif %}</span>
     </div>
-    <div class="d-flex justify-content-center align-items-center gap-4">
-      <div class="h4 mb-0 text-end flex-fill">{{ match.home_team.team.name }}</div>
-      <div class="display-5 fw-bold">{{ match.home_score }} × {{ match.away_score }}</div>
-      <div class="h4 mb-0 text-start flex-fill">{{ match.away_team.team.name }}</div>
+
+    <div class="row align-items-center g-2">
+      <div class="col-4 scoreboard-team">{% team_badge match.home_team size="4rem" %}<span>{{ match.home_team.team.name }}</span></div>
+      <div class="col-4 text-center">
+        <div class="scoreboard-score">{{ match.home_score }}<span class="opacity-50 mx-2">–</span>{{ match.away_score }}</div>
+        {% if match.home_penalty_score is not None %}
+          <div class="meta mt-1">{% translate "Penalties" %}: {{ match.home_penalty_score }} – {{ match.away_penalty_score }}</div>
+        {% endif %}
+        <div class="mt-2">{% include "matches/_status.html" %}</div>
+      </div>
+      <div class="col-4 scoreboard-team">{% team_badge match.away_team size="4rem" %}<span>{{ match.away_team.team.name }}</span></div>
     </div>
-    {% if match.home_penalty_score is not None %}
-      <div class="text-body-secondary">{% translate "Penalties" %}: {{ match.home_penalty_score }} × {{ match.away_penalty_score }}</div>
-    {% endif %}
-    <span class="badge mt-2 {% if match.is_live %}text-bg-danger{% else %}text-bg-secondary{% endif %}">{{ match.get_status_display }}</span>
-    {% if can_manage %}
-      <div class="mt-3"><a class="btn btn-sm btn-outline-secondary" href="{% url 'matches:update' match.pk %}">{% translate "Edit match" %}</a></div>
+
+    {% if can_manage or match.streaming_url %}
+      <div class="d-flex justify-content-center flex-wrap gap-2 mt-4">
+        {% if match.streaming_url %}
+          <a class="btn btn-sm btn-light" href="{{ match.streaming_url }}" target="_blank" rel="noopener">▶ {% translate "Watch the broadcast" %}</a>
+        {% endif %}
+        {% if can_manage %}
+          <a class="btn btn-sm btn-outline-light" href="{% url 'matches:update' match.pk %}">✏️ {% translate "Edit match" %}</a>
+        {% endif %}
+      </div>
     {% endif %}
   </div>
 </div>
 
 {% if locked %}
-  <div class="alert alert-warning">{% translate "The match sheet is closed for finished or canceled matches." %}</div>
+  <div class="alert alert-warning d-flex gap-2 align-items-center">🔒 {% translate "The match sheet is closed for finished or canceled matches." %}</div>
 {% endif %}
 
 <div class="row g-4">
-  {# Timeline #}
-  <div class="col-lg-7">
-    <h2 class="h5">{% translate "Timeline" %}</h2>
-    <div class="list-group">
-      {% for event in events %}
-        <div class="list-group-item{% if event.is_canceled %} bg-body-secondary text-body-secondary{% endif %}">
-          <div class="d-flex gap-3">
-            <span class="fw-bold" style="min-width: 3.5rem">{{ event.display_minute }}</span>
-            <div class="flex-grow-1">
-              <span class="fw-semibold{% if event.is_canceled %} text-decoration-line-through{% endif %}">{{ event.event_type.name }}</span>
-              {% if event.team %}<span class="text-body-secondary">· {{ event.team.team.name }}</span>{% endif %}
-              <span class="badge text-bg-light border ms-1">{{ event.get_period_display }}</span>
-              {% for participant in event.participants.all %}
-                <div class="small">{{ participant.role.name }}: {{ participant.player_registration.player.display_name }}</div>
-              {% endfor %}
-              {% if event.description %}<div class="small fst-italic">{{ event.description }}</div>{% endif %}
-              {% if event.is_canceled %}
-                <div class="small text-danger">
-                  {% translate "Canceled" %}{% if event.cancel_reason %}: {{ event.cancel_reason }}{% endif %}
-                  {% if event.canceled_by %}· {{ event.canceled_by }}{% endif %}
-                  {% if event.canceled_at %}· {{ event.canceled_at|naturaltime }}{% endif %}
+  {# --- Record an event + lineups --------------------------------------- #}
+  {% if not locked %}
+  <div class="col-lg-5 order-lg-2">
+      <div class="card mb-4" id="record">
+        <div class="card-body">
+          <h2 class="h5 fw-bold mb-1">{% translate "Record event" %}</h2>
+          {% if not home_lineup or not away_lineup %}
+            <div class="alert alert-info small py-2 mt-2 mb-3">
+              {% translate "Define both lineups first: players are chosen from the match sheet." %}
+            </div>
+          {% endif %}
+          <p class="text-body-secondary small">{% translate "1. Choose what happened:" %}</p>
+          <div class="event-picker mb-3">
+            {% for type in event_types %}
+              <a class="btn {% if type == event_type %}btn-primary{% else %}btn-outline-secondary{% endif %}"
+                 href="?event_type={{ type.code }}#record"{% if type == event_type %} aria-current="true"{% endif %}>
+                <span class="icon" aria-hidden="true">{{ type|event_icon }}</span>{{ type.name }}
+              </a>
+            {% endfor %}
+          </div>
+
+          {% if event_form %}
+            <hr>
+            <p class="text-body-secondary small">{% blocktranslate with name=event_type.name %}2. Fill in the details of “{{ name }}”:{% endblocktranslate %}</p>
+            <form method="post" action="?event_type={{ event_type.code }}#record" id="event-form" novalidate>
+              {% csrf_token %}
+              <input type="hidden" name="event_type" value="{{ event_type.code }}">
+              {% include "includes/form_errors.html" with form=event_form %}
+
+              {% if event_form.team %}
+                <div class="mb-3">
+                  <span class="form-label fw-semibold d-block">{{ event_form.team.label|capfirst }}</span>
+                  <div class="row g-2" role="radiogroup">
+                    {% for value, team, checked in event_form.team_options %}
+                      <div class="col-6">
+                        <input type="radio" class="btn-check" name="{{ event_form.team.html_name }}" id="team-{{ value }}"
+                               value="{{ value }}" autocomplete="off"{% if checked %} checked{% endif %}>
+                        <label class="btn btn-outline-primary w-100 d-flex align-items-center gap-2" for="team-{{ value }}">
+                          {% team_badge team size="1.75rem" %}<span class="text-truncate">{{ team.team.name }}</span>
+                        </label>
+                      </div>
+                    {% endfor %}
+                  </div>
+                  {% for error in event_form.team.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
                 </div>
               {% endif %}
-            </div>
-            {% if not event.is_canceled and not locked %}
-              <button class="btn btn-sm btn-outline-danger align-self-start" type="button"
-                      data-bs-toggle="collapse" data-bs-target="#cancel-{{ event.pk }}">{% translate "Cancel" %}</button>
-            {% endif %}
-          </div>
-          {% if not event.is_canceled and not locked %}
-            <form method="post" action="{% url 'matches:event_cancel' match.pk event.pk %}" class="collapse mt-2" id="cancel-{{ event.pk }}">
-              {% csrf_token %}
-              <div class="input-group input-group-sm">
-                <input class="form-control" name="{{ cancel_form.reason.html_name }}" maxlength="255" required
-                       placeholder="{% translate 'cancellation reason' %}" aria-label="{% translate 'cancellation reason' %}">
-                <button class="btn btn-danger" type="submit">{% translate "Confirm cancellation" %}</button>
+
+              {% for field in event_form.role_fields %}
+                {% include "includes/field.html" with field=field %}
+              {% endfor %}
+
+              <div class="row g-2">
+                <div class="col-12 col-sm-6">{% include "includes/field.html" with field=event_form.period %}</div>
+                <div class="col-6 col-sm-3">{% include "includes/field.html" with field=event_form.minute %}</div>
+                <div class="col-6 col-sm-3">{% include "includes/field.html" with field=event_form.stoppage_minute %}</div>
+              </div>
+              {% include "includes/field.html" with field=event_form.description %}
+
+              <div class="d-flex gap-2">
+                <button class="btn btn-primary flex-fill" type="submit">✔ {% translate "Record event" %}</button>
+                <a class="btn btn-outline-secondary" href="{% url 'matches:sheet' match.pk %}">{% translate "Cancel" %}</a>
               </div>
             </form>
           {% endif %}
         </div>
-      {% empty %}
-        <div class="list-group-item text-body-secondary">{% translate "No events recorded yet." %}</div>
-      {% endfor %}
-    </div>
-  </div>
-
-  {# Recording + lineups #}
-  <div class="col-lg-5">
-    {% if not locked %}
-      <h2 class="h5">{% translate "Record event" %}</h2>
-      <div class="card card-body mb-4">
-        <form method="get" class="d-flex gap-2 mb-3">
-          {{ type_form.event_type }}
-          <button class="btn btn-outline-success" type="submit">{% translate "Choose" %}</button>
-        </form>
-
-        {% if event_form %}
-          <form method="post" novalidate>
-            {% csrf_token %}
-            <input type="hidden" name="event_type" value="{{ event_type.code }}">
-            <h3 class="h6">{{ event_type.name }}</h3>
-            {% include "includes/form_errors.html" with form=event_form %}
-            {% if event_form.team %}{% include "includes/field.html" with field=event_form.team %}{% endif %}
-            {% for field in event_form.role_fields %}
-              {% include "includes/field.html" with field=field %}
-            {% endfor %}
-            <div class="row">
-              <div class="col-6">{% include "includes/field.html" with field=event_form.period %}</div>
-              <div class="col-3">{% include "includes/field.html" with field=event_form.minute %}</div>
-              <div class="col-3">{% include "includes/field.html" with field=event_form.stoppage_minute %}</div>
-            </div>
-            {% include "includes/field.html" with field=event_form.description %}
-            <button class="btn btn-success w-100" type="submit">{% translate "Record event" %}</button>
-          </form>
-        {% else %}
-          <p class="text-body-secondary small mb-0">{% translate "Choose the event type to see its fields." %}</p>
-        {% endif %}
       </div>
-    {% endif %}
+  </div>
+  {% endif %}
 
-    <h2 class="h5">{% translate "Lineups" %}</h2>
-    <div class="row g-3">
-      {% with side="home" team=match.home_team lineup=home_lineup %}
-        {% include "matches/_lineup_card.html" %}
-      {% endwith %}
-      {% with side="away" team=match.away_team lineup=away_lineup %}
-        {% include "matches/_lineup_card.html" %}
-      {% endwith %}
+  {# --- Timeline -------------------------------------------------------- #}
+  <div class="{% if locked %}col-12{% else %}col-lg-7 order-lg-1{% endif %}">
+    <div class="d-flex justify-content-between align-items-baseline mb-2">
+      <h2 class="h5 fw-bold mb-0">{% translate "Timeline" %}</h2>
+      <span class="small text-body-secondary">{% translate "Most recent first" %}</span>
+    </div>
+    <div class="card">
+      <ul class="timeline">
+        {% for event in events %}
+          <li class="timeline-item{% if event.is_canceled %} is-canceled{% endif %}"{% with color=event.team|team_color %}{% if color %} style="--team-color: {{ color }}"{% endif %}{% endwith %}>
+            <span class="timeline-minute">{{ event.display_minute }}</span>
+            <span class="timeline-icon" aria-hidden="true">{{ event.event_type|event_icon }}</span>
+            <div>
+              <div class="timeline-title fw-semibold">
+                {{ event.event_type.name }}
+                {% if event.team %}<span class="text-body-secondary fw-normal">· {{ event.team.team.name }}</span>{% endif %}
+              </div>
+              {% for participant in event.participants.all %}
+                <div class="small"><span class="text-body-secondary">{{ participant.role.name }}:</span> {{ participant.player_registration.player.display_name }}</div>
+              {% endfor %}
+              {% if event.description %}<div class="small fst-italic text-body-secondary">“{{ event.description }}”</div>{% endif %}
+              <div class="small text-body-secondary mt-1">{{ event.get_period_display }}</div>
+              {% if event.is_canceled %}
+                <div class="small text-danger mt-1">
+                  ⛔ {% translate "Canceled" %}{% if event.cancel_reason %}: {{ event.cancel_reason }}{% endif %}
+                  {% if event.canceled_by %}· {{ event.canceled_by }}{% endif %}
+                  {% if event.canceled_at %}· {{ event.canceled_at|naturaltime }}{% endif %}
+                </div>
+              {% endif %}
+              {% if not event.is_canceled and not locked %}
+                <form method="post" action="{% url 'matches:event_cancel' match.pk event.pk %}" class="collapse mt-2" id="cancel-{{ event.pk }}">
+                  {% csrf_token %}
+                  <div class="input-group input-group-sm">
+                    <input class="form-control" name="{{ cancel_form.reason.html_name }}" maxlength="255" required
+                           placeholder="{% translate 'Why? e.g. offside' %}" aria-label="{% translate 'cancellation reason' %}">
+                    <button class="btn btn-danger" type="submit">{% translate "Confirm cancellation" %}</button>
+                  </div>
+                </form>
+              {% endif %}
+            </div>
+            {% if not event.is_canceled and not locked %}
+              <button class="btn btn-sm btn-link text-danger text-decoration-none p-0" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#cancel-{{ event.pk }}"
+                      aria-controls="cancel-{{ event.pk }}" aria-expanded="false">{% translate "Cancel" %}</button>
+            {% else %}
+              <span></span>
+            {% endif %}
+          </li>
+        {% empty %}
+          <li class="text-center text-body-secondary py-5">
+            <div class="display-6 mb-2" aria-hidden="true">⏱️</div>
+            {% translate "No events recorded yet." %}
+          </li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 </div>
+
+{# --- Lineups (full width, after the timeline on every screen) ----------- #}
+<h2 class="h5 fw-bold mt-5 mb-2">{% translate "Lineups" %}</h2>
+<div class="row g-3">
+  {% with side="home" team=match.home_team lineup=home_lineup %}{% include "matches/_lineup_card.html" %}{% endwith %}
+  {% with side="away" team=match.away_team lineup=away_lineup %}{% include "matches/_lineup_card.html" %}{% endwith %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/match_sheet.js' %}" defer></script>
 {% endblock %}

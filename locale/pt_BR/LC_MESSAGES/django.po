@@ -920,10 +920,6 @@ msgid "Edit"
 msgstr "Editar"
 
 #: apps/matches/templates/matches/_lineup_card.html
-msgid "Sub."
-msgstr "Res."
-
-#: apps/matches/templates/matches/_lineup_card.html
 msgid "Lineup not defined."
 msgstr "Escalação não definida."
 
@@ -938,10 +934,6 @@ msgstr "Este time não tem jogadores inscritos."
 #: apps/matches/templates/matches/lineup_form.html
 msgid "Save lineup"
 msgstr "Salvar escalação"
-
-#: apps/matches/templates/matches/lineup_form.html
-msgid "Back to the match sheet"
-msgstr "Voltar para a súmula"
 
 #: apps/matches/templates/matches/lineup_form.html
 #, python-format
@@ -1018,13 +1010,100 @@ msgid "Record event"
 msgstr "Registrar evento"
 
 #: apps/matches/templates/matches/match_sheet.html
-msgid "Choose"
-msgstr "Escolher"
-
-#: apps/matches/templates/matches/match_sheet.html
-msgid "Choose the event type to see its fields."
-msgstr "Escolha o tipo de evento para ver os campos."
-
-#: apps/matches/templates/matches/match_sheet.html
 msgid "Lineups"
 msgstr "Escalações"
+
+#: templates/registration/login.html
+msgid "Back-office for administrators and table officials."
+msgstr "Painel para administradores e mesários."
+
+#: templates/registration/login.html
+msgid "Incorrect username or password."
+msgstr "Usuário ou senha incorretos."
+
+#: apps/matches/templates/matches/_lineup_card.html
+msgid "Define"
+msgstr "Definir"
+
+#: apps/matches/templates/matches/_lineup_card.html
+msgid "Substitutes"
+msgstr "Reservas"
+
+#: apps/matches/templates/matches/lineup_form.html
+msgid "Starters"
+msgstr "Titulares"
+
+#: apps/matches/templates/matches/lineup_form.html
+msgid "Back"
+msgstr "Voltar"
+
+#: apps/matches/templates/matches/match_form.html
+msgid "Fixture"
+msgstr "Confronto"
+
+#: apps/matches/templates/matches/match_form.html
+msgid "When and where"
+msgstr "Quando e onde"
+
+#: apps/matches/templates/matches/match_form.html
+msgid "Table officials"
+msgstr "Mesários"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Schedule fixtures and run the match sheets."
+msgstr "Agende os confrontos e conduza as súmulas."
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Matches assigned to you."
+msgstr "Jogos designados para você."
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Choose the championship"
+msgstr "Escolha o campeonato"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Search…"
+msgstr "Buscar…"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Clear filters"
+msgstr "Limpar filtros"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Try clearing the filters."
+msgstr "Tente limpar os filtros."
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Use “New match” to schedule the first one."
+msgstr "Use “Novo jogo” para agendar o primeiro."
+
+#: apps/matches/templates/matches/match_list.html
+msgid "You have not been assigned to any match yet."
+msgstr "Você ainda não foi designado para nenhum jogo."
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Watch the broadcast"
+msgstr "Assistir à transmissão"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Define both lineups first: players are chosen from the match sheet."
+msgstr ""
+"Defina as duas escalações primeiro: os jogadores são escolhidos a partir da "
+"súmula."
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "1. Choose what happened:"
+msgstr "1. Escolha o que aconteceu:"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Most recent first"
+msgstr "Mais recentes primeiro"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Why? e.g. offside"
+msgstr "Por quê? Ex.: impedimento"
+
+#: apps/matches/templates/matches/match_sheet.html
+#, python-format
+msgid "2. Fill in the details of “%(name)s”:"
+msgstr "2. Preencha os detalhes de “%(name)s”:"

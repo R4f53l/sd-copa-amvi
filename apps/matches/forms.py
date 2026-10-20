@@ -22,6 +22,32 @@ def lineup_label(lineup):
     return f"{number}{player} ({lineup.team.team.short_name})"
 
 
+class LineupSelect(forms.Select):
+    """Select whose options carry the player's team, so the page can
+    narrow the list to the chosen team (progressive enhancement)."""
+
+    def create_option(self, name, value, *args, **kwargs):
+        option = super().create_option(name, value, *args, **kwargs)
+        instance = getattr(value, "instance", None)
+        if instance is not None:
+            option["attrs"]["data-team"] = str(instance.team_id)
+        return option
+
+
+# Period suggested for a new event, based on the match status.
+PERIOD_BY_STATUS = {
+    Match.Status.SECOND_HALF: MatchEvent.Period.SECOND_HALF,
+    Match.Status.EXTRA_TIME: MatchEvent.Period.EXTRA_TIME_FIRST,
+    Match.Status.PENALTIES: MatchEvent.Period.PENALTIES,
+}
+
+
+def suggested_period(match, event_type):
+    if event_type.category == EventType.Category.SHOOTOUT:
+        return MatchEvent.Period.PENALTIES
+    return PERIOD_BY_STATUS.get(match.status, MatchEvent.Period.FIRST_HALF)
+
+
 # ---------------------------------------------------------------------------
 # Match scheduling
 # ---------------------------------------------------------------------------
@@ -70,7 +96,12 @@ class MatchForm(BootstrapFormMixin, forms.ModelForm):
         )
         self.fields["table_officials"].queryset = (
             get_user_model()
-            .objects.filter(role=get_user_model().Role.TABLE_OFFICIAL)
+            .objects.filter(
+                role=get_user_model().Role.TABLE_OFFICIAL,
+                # Superusers already run every match.
+                is_superuser=False,
+                is_active=True,
+            )
             .order_by("first_name", "username")
         )
         self.fields["scheduled_at"].input_formats = [DATETIME_LOCAL_FORMAT]
@@ -91,7 +122,8 @@ class LineupEntryForm(BootstrapFormMixin, forms.Form):
     role = forms.ChoiceField(
         label=_("role"),
         required=False,
-        choices=[("", _("Not listed")), *Lineup.Role.choices],
+        choices=[*Lineup.Role.choices, ("", _("Not listed"))],
+        widget=forms.RadioSelect,
     )
     shirt_number = forms.IntegerField(
         label=_("shirt number"), required=False, min_value=1, max_value=99
@@ -255,25 +287,15 @@ LineupFormSet = forms.formset_factory(
 # ---------------------------------------------------------------------------
 
 
-class EventTypeChoiceForm(BootstrapFormMixin, forms.Form):
-    """First step: pick which kind of event to record."""
-
-    event_type = forms.ModelChoiceField(
-        label=_("event type"),
-        queryset=EventType.objects.filter(is_active=True),
-        to_field_name="code",
-    )
-
-
 class MatchEventForm(BootstrapFormMixin, forms.Form):
     """
-    Second step: the event details. One player field is added for each
-    role allowed for the chosen event type.
+    Details of an event whose type was picked beforehand. One player
+    field is added for each role allowed for that event type.
     """
 
     ROLE_PREFIX = "role_"
 
-    team = forms.ChoiceField(label=_("team"))
+    team = forms.ChoiceField(label=_("team"), widget=forms.RadioSelect)
     period = forms.TypedChoiceField(
         label=_("period"), choices=MatchEvent.Period.choices, coerce=int
     )
@@ -294,10 +316,10 @@ class MatchEventForm(BootstrapFormMixin, forms.Form):
             str(match.away_team_id): match.away_team,
         }
 
+        self.fields["period"].initial = suggested_period(match, event_type)
         if event_type.requires_team:
             self.fields["team"].choices = [
-                ("", "—"),
-                *((pk, team_label(t)) for pk, t in self.teams.items()),
+                (pk, team_label(t)) for pk, t in self.teams.items()
             ]
         else:
             del self.fields["team"]
@@ -305,22 +327,44 @@ class MatchEventForm(BootstrapFormMixin, forms.Form):
         lineups = match.lineups.select_related(
             "player_registration__player", "team__team"
         ).order_by("team", "role", "shirt_number")
-        self.roles = list(event_type.allowed_roles.order_by("name"))
+        # Required roles first (e.g. scorer before assist).
+        self.roles = sorted(
+            event_type.allowed_roles.all(),
+            key=lambda r: (r.code in services.OPTIONAL_ROLES, r.name),
+        )
         for role in self.roles:
             field = forms.ModelChoiceField(
                 label=role.name,
                 queryset=lineups,
                 required=role.code not in services.OPTIONAL_ROLES,
+                widget=LineupSelect(
+                    attrs={
+                        "data-opponent": (
+                            "1" if role.code in services.OPPONENT_ROLES else ""
+                        )
+                    }
+                ),
             )
             field.label_from_instance = lineup_label
+            field.empty_label = "—"
             self.fields[self.ROLE_PREFIX + role.code] = field
         self.order_fields(
             ["team", *(self.ROLE_PREFIX + r.code for r in self.roles)]
         )
+        # The player fields were added after the mixin ran.
+        self.apply_bootstrap_classes()
 
     @property
     def role_fields(self):
         return [self[self.ROLE_PREFIX + role.code] for role in self.roles]
+
+    @property
+    def team_options(self):
+        """(value, ChampionshipTeam, checked) for the team buttons."""
+        if "team" not in self.fields:
+            return []
+        selected = str(self["team"].value() or "")
+        return [(pk, team, pk == selected) for pk, team in self.teams.items()]
 
     def clean(self):
         data = super().clean()

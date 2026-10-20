@@ -149,12 +149,15 @@ def record_event(
     team,
     period,
     minute,
+    recorded_by,
     stoppage_minute=0,
     description="",
     participants=None,
-    recorded_by=None,
 ):
-    """Record an event with its participants and refresh the score."""
+    """Record an event with its participants and refresh the score.
+
+    ``recorded_by`` is the user responsible for the entry (audit trail).
+    """
     ensure_editable(match)
     participants = participants or {}
     validate_participants(match, event_type, team, participants)

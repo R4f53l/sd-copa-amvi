@@ -15,7 +15,6 @@ from apps.championships.models import Championship
 from . import services
 from .forms import (
     CancelEventForm,
-    EventTypeChoiceForm,
     LineupFormSet,
     MatchEventForm,
     MatchForm,
@@ -214,15 +213,20 @@ class MatchSheetView(MatchOfficialRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         match = self.match
         event_type = kwargs.get("event_type", self.get_event_type())
-        events = match.events.select_related(
-            "event_type", "team__team", "recorded_by"
-        ).prefetch_related(
-            Prefetch(
-                "participants",
-                queryset=MatchEventParticipant.objects.select_related(
-                    "role", "player_registration__player"
-                ),
+        # Most recent first: during the match that is what matters.
+        events = (
+            match.events.select_related(
+                "event_type", "team__team", "recorded_by", "canceled_by"
             )
+            .prefetch_related(
+                Prefetch(
+                    "participants",
+                    queryset=MatchEventParticipant.objects.select_related(
+                        "role", "player_registration__player"
+                    ),
+                )
+            )
+            .order_by("-period", "-minute", "-stoppage_minute", "-created_at")
         )
         lineups = match.lineups.select_related(
             "player_registration__player"
@@ -238,9 +242,7 @@ class MatchSheetView(MatchOfficialRequiredMixin, TemplateView):
             ],
             locked=services.is_locked(match),
             can_manage=can_manage_matches(self.request.user),
-            type_form=EventTypeChoiceForm(
-                initial={"event_type": event_type.code if event_type else None}
-            ),
+            event_types=EventType.objects.filter(is_active=True),
             event_type=event_type,
             event_form=kwargs.get("event_form")
             or self.get_event_form(event_type),

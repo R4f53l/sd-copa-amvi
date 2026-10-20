@@ -1,17 +1,23 @@
 {% extends "base.html" %}
-{% load i18n humanize %}
+{% load i18n humanize teams_tags %}
 
 {% block title %}{% translate "Matches" %}{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-  <h1 class="h3 mb-0">{% translate "Matches" %}</h1>
+<div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-0">{% translate "Matches" %}</h1>
+    <p class="text-body-secondary mb-0 small">
+      {% if can_manage %}{% translate "Schedule fixtures and run the match sheets." %}{% else %}{% translate "Matches assigned to you." %}{% endif %}
+    </p>
+  </div>
   {% if can_manage %}
     <div class="dropdown">
-      <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        {% translate "New match" %}
+      <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        + {% translate "New match" %}
       </button>
-      <ul class="dropdown-menu dropdown-menu-end">
+      <ul class="dropdown-menu dropdown-menu-end shadow">
+        <li><h6 class="dropdown-header">{% translate "Choose the championship" %}</h6></li>
         {% for championship in championships %}
           <li><a class="dropdown-item" href="{% url 'matches:create' championship.pk %}">{{ championship }}</a></li>
         {% empty %}
@@ -24,77 +30,85 @@
 
 <form method="get" class="card card-body mb-4">
   <div class="row g-2 align-items-end">
-    <div class="col-md-4">
-      <label class="form-label small" for="f-championship">{% translate "championship" %}</label>
-      <select class="form-select" name="championship" id="f-championship">
+    <div class="col-12 col-md-4">
+      <label class="form-label small fw-semibold" for="f-championship">{% translate "championship" %}</label>
+      <select class="form-select" name="championship" id="f-championship" onchange="this.form.submit()">
         <option value="">{% translate "All" %}</option>
         {% for championship in championships %}
           <option value="{{ championship.pk }}"{% if filters.championship == championship.pk|stringformat:"s" %} selected{% endif %}>{{ championship }}</option>
         {% endfor %}
       </select>
     </div>
-    <div class="col-md-2">
-      <label class="form-label small" for="f-round">{% translate "round" %}</label>
+    <div class="col-4 col-md-2">
+      <label class="form-label small fw-semibold" for="f-round">{% translate "round" %}</label>
       <input class="form-control" type="number" min="1" name="round" id="f-round" value="{{ filters.round }}">
     </div>
-    <div class="col-md-2">
-      <label class="form-label small" for="f-status">{% translate "status" %}</label>
-      <select class="form-select" name="status" id="f-status">
+    <div class="col-8 col-md-2">
+      <label class="form-label small fw-semibold" for="f-status">{% translate "status" %}</label>
+      <select class="form-select" name="status" id="f-status" onchange="this.form.submit()">
         <option value="">{% translate "All" %}</option>
         {% for value, label in statuses %}
           <option value="{{ value }}"{% if filters.status == value %} selected{% endif %}>{{ label }}</option>
         {% endfor %}
       </select>
     </div>
-    <div class="col-md-2">
-      <label class="form-label small" for="f-q">{% translate "team" %}</label>
-      <input class="form-control" type="search" name="q" id="f-q" value="{{ filters.q }}">
+    <div class="col-8 col-md-2">
+      <label class="form-label small fw-semibold" for="f-q">{% translate "team" %}</label>
+      <input class="form-control" type="search" name="q" id="f-q" value="{{ filters.q }}" placeholder="{% translate 'Search…' %}">
     </div>
-    <div class="col-md-2 d-grid">
-      <button class="btn btn-outline-success" type="submit">{% translate "Filter" %}</button>
+    <div class="col-4 col-md-2 d-flex gap-1">
+      <button class="btn btn-outline-primary flex-fill" type="submit">{% translate "Filter" %}</button>
+      {% if querystring %}
+        <a class="btn btn-link px-2" href="{% url 'matches:list' %}" title="{% translate 'Clear filters' %}" aria-label="{% translate 'Clear filters' %}">✕</a>
+      {% endif %}
     </div>
   </div>
 </form>
 
 {% regroup matches by championship as by_championship %}
 {% for group in by_championship %}
-  <h2 class="h5 mt-4">{{ group.grouper }}</h2>
+  <h2 class="h5 fw-bold mt-4 mb-2">🏆 {{ group.grouper }}</h2>
   {% regroup group.list by round_number as by_round %}
   {% for round in by_round %}
-    <h3 class="h6 text-body-secondary mt-3">
+    <div class="section-title mt-3 mb-2">
       {% if round.grouper %}{% blocktranslate with number=round.grouper %}Round {{ number }}{% endblocktranslate %}{% else %}{% translate "No round" %}{% endif %}
-    </h3>
-    <div class="list-group mb-2">
+    </div>
+    <div class="d-grid gap-2 mb-3">
       {% for match in round.list %}
-        <div class="list-group-item d-flex flex-wrap align-items-center gap-3">
-          <div class="text-body-secondary small" style="min-width: 9rem">
-            {{ match.scheduled_at|naturalday:"d/m/Y"|capfirst }} · {{ match.scheduled_at|time:"H:i" }}
-            {% if match.stadium %}<br>{{ match.stadium.name }}{% endif %}
-          </div>
-          <div class="flex-grow-1 fw-semibold">
-            {{ match.home_team.team.name }}
-            {% if match.status != "SCHEDULED" %}
-              <span class="badge text-bg-dark mx-1">{{ match.home_score }} × {{ match.away_score }}</span>
-            {% else %}
-              <span class="text-body-secondary mx-1">×</span>
-            {% endif %}
-            {{ match.away_team.team.name }}
-          </div>
-          <span class="badge {% if match.is_live %}text-bg-danger{% elif match.status == 'FINISHED' %}text-bg-secondary{% else %}text-bg-light border{% endif %}">
-            {{ match.get_status_display }}
-          </span>
-          <div class="btn-group btn-group-sm">
-            <a class="btn btn-outline-success" href="{% url 'matches:sheet' match.pk %}">{% translate "Match sheet" %}</a>
-            {% if can_manage %}
-              <a class="btn btn-outline-secondary" href="{% url 'matches:update' match.pk %}">{% translate "Edit" %}</a>
-            {% endif %}
+        <div class="card fixture-card">
+          <div class="card-body py-3">
+            <div class="d-flex justify-content-between align-items-center small text-body-secondary mb-2">
+              <span>📅 {{ match.scheduled_at|naturalday:"D, d/m"|capfirst }} · {{ match.scheduled_at|time:"H:i" }}{% if match.stadium %} · 📍 {{ match.stadium.name }}{% endif %}</span>
+              {% include "matches/_status.html" %}
+            </div>
+            <a class="fixture text-reset text-decoration-none" href="{% url 'matches:sheet' match.pk %}">
+              <div class="fixture-team is-home"><span>{{ match.home_team.team.name }}</span>{% team_badge match.home_team %}</div>
+              {% if match.status == "SCHEDULED" or match.status == "POSTPONED" %}
+                <div class="fixture-score is-pending">×</div>
+              {% else %}
+                <div class="fixture-score">{{ match.home_score }} – {{ match.away_score }}</div>
+              {% endif %}
+              <div class="fixture-team">{% team_badge match.away_team %}<span>{{ match.away_team.team.name }}</span></div>
+            </a>
+            <div class="d-flex justify-content-end gap-2 mt-2">
+              <a class="btn btn-sm btn-primary" href="{% url 'matches:sheet' match.pk %}">📋 {% translate "Match sheet" %}</a>
+              {% if can_manage %}
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'matches:update' match.pk %}">✏️ {% translate "Edit" %}</a>
+              {% endif %}
+            </div>
           </div>
         </div>
       {% endfor %}
     </div>
   {% endfor %}
 {% empty %}
-  <div class="alert alert-light border">{% translate "No matches found." %}</div>
+  <div class="card card-body text-center py-5">
+    <div class="display-6 mb-2" aria-hidden="true">🗓️</div>
+    <p class="fw-semibold mb-1">{% translate "No matches found." %}</p>
+    <p class="text-body-secondary small mb-0">
+      {% if querystring %}{% translate "Try clearing the filters." %}{% elif can_manage %}{% translate "Use “New match” to schedule the first one." %}{% else %}{% translate "You have not been assigned to any match yet." %}{% endif %}
+    </p>
+  </div>
 {% endfor %}
 
 {% include "includes/pagination.html" %}
