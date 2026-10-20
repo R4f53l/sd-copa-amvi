@@ -1,9 +1,11 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.generic import CreateView, ListView, UpdateView
+
+from apps.accounts.decorators import AdminRequiredMixin
 
 from .forms import CityForm, PlayerForm, StadiumForm, TeamForm
 from .models import City, Player, Stadium, Team
@@ -12,11 +14,6 @@ from .models import City, Player, Stadium, Team
 # verifica permissao de administrador para escrita nos cadastros
 def can_manage_registry(user):
     return user.is_authenticated and user.is_admin
-
-
-class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    def test_func(self):
-        return can_manage_registry(self.request.user)
 
 
 # base paginada com filtro de busca e preservacao de querystring

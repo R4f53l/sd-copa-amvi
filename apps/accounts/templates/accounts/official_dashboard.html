@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "My assigned matches" %}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-1">{% translate "My assigned matches" %}</h1>
+    <p class="text-muted mb-0">{% translate "Matches assigned to your account." %}</p>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">{% translate "Date and time" %}</th>
+          <th scope="col">{% translate "Championship" %}</th>
+          <th scope="col">{% translate "Match" %}</th>
+          <th scope="col">{% translate "Status" %}</th>
+          <th scope="col"><span class="visually-hidden">{% translate "Actions" %}</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for match in matches %}
+          <tr>
+            <td>{{ match.scheduled_at|date:"d/m/Y H:i" }}</td>
+            <td>{{ match.championship }}</td>
+            <td>{{ match.home_team.team }} <span class="text-muted">×</span> {{ match.away_team.team }}</td>
+            <td><span class="badge text-bg-secondary">{{ match.get_status_display }}</span></td>
+            <td class="text-end">
+              <a class="btn btn-sm btn-outline-success" href="{% url 'matches:sheet' match.pk %}">{% translate "Open match sheet" %}</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-center text-muted py-4">{% translate "No matches are assigned to you." %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

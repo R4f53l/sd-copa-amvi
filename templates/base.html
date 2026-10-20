@@ -37,8 +37,13 @@
                href="{% url 'teams:team_list' %}">{% translate "Teams" %}</a>
           </li>
           {% if user.is_authenticated %}
-            {% if user.is_staff %}
+            <li class="nav-item">
+              <a class="nav-link{% if section == 'accounts' and request.resolver_match.url_name == 'official_dashboard' %} active{% endif %}"
+                 href="{% url 'accounts:official_dashboard' %}">{% translate "My assignments" %}</a>
+            </li>
+            {% if user.is_admin %}
               <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">{% translate "Admin" %}</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'accounts:official_create' %}">{% translate "Create table official" %}</a></li>
             {% endif %}
           {% endif %}
         </ul>
@@ -63,6 +68,7 @@
               {% csrf_token %}
               <button class="btn btn-sm btn-outline-light" type="submit">{% translate "Log out" %}</button>
             </form>
+            <a class="btn btn-sm btn-outline-light" href="{% url 'accounts:password_change' %}">{% translate "Change password" %}</a>
           {% elif section != 'accounts' %}
             <a class="btn btn-sm btn-light" href="{% url 'accounts:login' %}">{% translate "Log in" %}</a>
           {% endif %}

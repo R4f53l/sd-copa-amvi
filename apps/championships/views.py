@@ -1,7 +1,6 @@
 from functools import cached_property
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
@@ -17,6 +16,8 @@ from django.views.generic import (
     UpdateView,
 )
 
+from apps.accounts.decorators import AdminRequiredMixin
+
 from .forms import (
     ChampionshipForm,
     ChampionshipTeamFormSet,
@@ -27,11 +28,6 @@ from .models import Championship, ChampionshipTeam, PlayerRegistration
 
 def can_manage_championships(user):
     return user.is_authenticated and user.is_admin
-
-
-class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    def test_func(self):
-        return can_manage_championships(self.request.user)
 
 
 # --- campeonatos ---
