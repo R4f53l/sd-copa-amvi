@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F, Q
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from apps.shared.models import TimeStampedModel
@@ -121,6 +122,9 @@ class Match(TimeStampedModel):
             models.CheckConstraint(
                 condition=~Q(home_team=F("away_team")),
                 name="match_teams_must_differ",
+                violation_error_message=_(
+                    "The home and away teams must be different."
+                ),
             ),
         ]
 
@@ -152,14 +156,37 @@ class Match(TimeStampedModel):
         return None
 
     def clean(self):
-        for side in (self.home_team, self.away_team):
-            if side and side.championship_id != self.championship_id:
+        # Read through the *_id attributes: a side may be unset when its
+        # form field failed validation, and accessing the relation would
+        # raise instead of reporting the error.
+        for name in ("home_team", "away_team"):
+            if not getattr(self, f"{name}_id"):
+                continue
+            side = getattr(self, name)
+            if side.championship_id != self.championship_id:
                 raise ValidationError(
                     _(
                         "Both teams must be enrolled in the match's "
                         "championship."
                     )
                 )
+        self._validate_date_within_championship()
+
+    def _validate_date_within_championship(self):
+        if not (self.scheduled_at and self.championship_id):
+            return
+        day = timezone.localdate(self.scheduled_at)
+        starts = self.championship.start_date
+        ends = self.championship.end_date
+        if (starts and day < starts) or (ends and day > ends):
+            raise ValidationError(
+                {
+                    "scheduled_at": _(
+                        "The match date must be within the championship "
+                        "period."
+                    )
+                }
+            )
 
     def involves(self, championship_team_id):
         return championship_team_id in (self.home_team_id, self.away_team_id)

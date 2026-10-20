@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Log in" %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-sm-8 col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-4">{% translate "Log in" %}</h1>
+        {% include "includes/form_errors.html" %}
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ next }}">
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              <input class="form-control" type="{% if field.name == 'password' %}password{% else %}text{% endif %}"
+                     name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                     value="{% if field.name != 'password' %}{{ field.value|default:'' }}{% endif %}" required>
+            </div>
+          {% endfor %}
+          <button class="btn btn-success w-100" type="submit">{% translate "Log in" %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

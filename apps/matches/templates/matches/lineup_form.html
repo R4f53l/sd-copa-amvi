@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Lineup" %} · {{ team.team.name }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'matches:list' %}">{% translate "Matches" %}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'matches:sheet' match.pk %}">{{ match }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{% translate "Lineup" %}</li>
+  </ol>
+</nav>
+
+<h1 class="h3">{% translate "Lineup" %} · {{ team.team.name }}</h1>
+<p class="text-body-secondary">
+  {% blocktranslate %}Mark between {{ min_starters }} and {{ max_starters }} starters, the substitutes and one captain. Only players with an active registration can be listed.{% endblocktranslate %}
+</p>
+
+{% if locked %}
+  <div class="alert alert-warning">{% translate "The match sheet is closed for finished or canceled matches." %}</div>
+{% endif %}
+
+{% for error in formset.non_form_errors %}
+  <div class="alert alert-danger">{{ error }}</div>
+{% endfor %}
+
+<form method="post">
+  {% csrf_token %}
+  {{ formset.management_form }}
+  <div class="table-responsive card">
+    <table class="table table-sm align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>{% translate "player" %}</th>
+          <th style="width: 11rem">{% translate "role" %}</th>
+          <th style="width: 7rem">{% translate "shirt number" %}</th>
+          <th style="width: 11rem">{% translate "position" %}</th>
+          <th class="text-center" style="width: 6rem">{% translate "captain" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form, registration in formset.rows %}
+          <tr>
+            <td>
+              {{ form.registration_id }}
+              <span class="fw-semibold">{{ registration.player.display_name }}</span>
+              {% if registration.player.nickname %}<span class="text-body-secondary small">({{ registration.player.full_name }})</span>{% endif %}
+              {% if registration.status != "ACTIVE" %}<span class="badge text-bg-warning">{{ registration.get_status_display }}</span>{% endif %}
+              {% for error in form.non_field_errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </td>
+            <td>{{ form.role }}{% for error in form.role.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</td>
+            <td>{{ form.shirt_number }}{% for error in form.shirt_number.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</td>
+            <td>{{ form.position }}</td>
+            <td class="text-center">{{ form.is_captain }}{% for error in form.is_captain.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-body-secondary">{% translate "This team has no registered players." %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex gap-2 mt-3">
+    <button class="btn btn-success" type="submit"{% if locked %} disabled{% endif %}>{% translate "Save lineup" %}</button>
+    <a class="btn btn-outline-secondary" href="{% url 'matches:sheet' match.pk %}">{% translate "Back to the match sheet" %}</a>
+  </div>
+</form>
+{% endblock %}

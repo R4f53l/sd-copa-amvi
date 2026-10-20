@@ -1,0 +1,22 @@
+{% load i18n %}
+<div class="col-sm-6 col-lg-12 col-xl-6">
+  <div class="card h-100">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span class="fw-semibold">{{ team.team.name }}</span>
+      {% if not locked %}
+        <a class="btn btn-sm btn-outline-success" href="{% url 'matches:lineup' match.pk side %}">{% translate "Edit" %}</a>
+      {% endif %}
+    </div>
+    <ul class="list-group list-group-flush small">
+      {% for entry in lineup %}
+        <li class="list-group-item d-flex gap-2{% if entry.role == 'SUBSTITUTE' %} text-body-secondary{% endif %}">
+          <span style="min-width: 2rem">{{ entry.shirt_number|default:"—" }}</span>
+          <span class="flex-grow-1">{{ entry.player_registration.player.display_name }}{% if entry.is_captain %} <span class="badge text-bg-warning">C</span>{% endif %}</span>
+          {% if entry.role == 'SUBSTITUTE' %}<span>{% translate "Sub." %}</span>{% endif %}
+        </li>
+      {% empty %}
+        <li class="list-group-item text-body-secondary">{% translate "Lineup not defined." %}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>

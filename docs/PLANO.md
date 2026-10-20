@@ -85,9 +85,9 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Mensagens de sucesso e erro
 
 **Dev 3**
-- [ ] Cadastro de jogos (calendário de confrontos)
-- [ ] Validações: times inscritos no campeonato e mandante diferente do visitante
-- [ ] Lista de jogos por rodada
+- [x] Cadastro de jogos (calendário de confrontos)
+- [x] Validações: times inscritos no campeonato e mandante diferente do visitante
+- [x] Lista de jogos por rodada
 
 **Dev 4**
 - [ ] `base.html`: layout, menu e exibição das mensagens
@@ -109,9 +109,9 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Inscrição de jogadores, validando um time por campeonato e o número da camisa
 
 **Dev 3**
-- [ ] Formulário de escalação com formset: 11 titulares, capitão único e só jogadores aptos
-- [ ] Súmula v1: formulário de evento com os participantes conforme o tipo
-- [ ] Cancelamento de evento
+- [x] Formulário de escalação com formset: 11 titulares, capitão único e só jogadores aptos
+- [x] Súmula v1: formulário de evento com os participantes conforme o tipo
+- [x] Cancelamento de evento
 
 **Dev 4**
 - [ ] Página pública do jogo: escalações, local, horário, timeline e player do streaming

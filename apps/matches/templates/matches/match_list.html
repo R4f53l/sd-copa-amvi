@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load i18n humanize %}
+
+{% block title %}{% translate "Matches" %}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">{% translate "Matches" %}</h1>
+  {% if can_manage %}
+    <div class="dropdown">
+      <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {% translate "New match" %}
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        {% for championship in championships %}
+          <li><a class="dropdown-item" href="{% url 'matches:create' championship.pk %}">{{ championship }}</a></li>
+        {% empty %}
+          <li><span class="dropdown-item-text text-body-secondary">{% translate "Create a championship first." %}</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</div>
+
+<form method="get" class="card card-body mb-4">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-4">
+      <label class="form-label small" for="f-championship">{% translate "championship" %}</label>
+      <select class="form-select" name="championship" id="f-championship">
+        <option value="">{% translate "All" %}</option>
+        {% for championship in championships %}
+          <option value="{{ championship.pk }}"{% if filters.championship == championship.pk|stringformat:"s" %} selected{% endif %}>{{ championship }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small" for="f-round">{% translate "round" %}</label>
+      <input class="form-control" type="number" min="1" name="round" id="f-round" value="{{ filters.round }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small" for="f-status">{% translate "status" %}</label>
+      <select class="form-select" name="status" id="f-status">
+        <option value="">{% translate "All" %}</option>
+        {% for value, label in statuses %}
+          <option value="{{ value }}"{% if filters.status == value %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small" for="f-q">{% translate "team" %}</label>
+      <input class="form-control" type="search" name="q" id="f-q" value="{{ filters.q }}">
+    </div>
+    <div class="col-md-2 d-grid">
+      <button class="btn btn-outline-success" type="submit">{% translate "Filter" %}</button>
+    </div>
+  </div>
+</form>
+
+{% regroup matches by championship as by_championship %}
+{% for group in by_championship %}
+  <h2 class="h5 mt-4">{{ group.grouper }}</h2>
+  {% regroup group.list by round_number as by_round %}
+  {% for round in by_round %}
+    <h3 class="h6 text-body-secondary mt-3">
+      {% if round.grouper %}{% blocktranslate with number=round.grouper %}Round {{ number }}{% endblocktranslate %}{% else %}{% translate "No round" %}{% endif %}
+    </h3>
+    <div class="list-group mb-2">
+      {% for match in round.list %}
+        <div class="list-group-item d-flex flex-wrap align-items-center gap-3">
+          <div class="text-body-secondary small" style="min-width: 9rem">
+            {{ match.scheduled_at|naturalday:"d/m/Y"|capfirst }} · {{ match.scheduled_at|time:"H:i" }}
+            {% if match.stadium %}<br>{{ match.stadium.name }}{% endif %}
+          </div>
+          <div class="flex-grow-1 fw-semibold">
+            {{ match.home_team.team.name }}
+            {% if match.status != "SCHEDULED" %}
+              <span class="badge text-bg-dark mx-1">{{ match.home_score }} × {{ match.away_score }}</span>
+            {% else %}
+              <span class="text-body-secondary mx-1">×</span>
+            {% endif %}
+            {{ match.away_team.team.name }}
+          </div>
+          <span class="badge {% if match.is_live %}text-bg-danger{% elif match.status == 'FINISHED' %}text-bg-secondary{% else %}text-bg-light border{% endif %}">
+            {{ match.get_status_display }}
+          </span>
+          <div class="btn-group btn-group-sm">
+            <a class="btn btn-outline-success" href="{% url 'matches:sheet' match.pk %}">{% translate "Match sheet" %}</a>
+            {% if can_manage %}
+              <a class="btn btn-outline-secondary" href="{% url 'matches:update' match.pk %}">{% translate "Edit" %}</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+{% empty %}
+  <div class="alert alert-light border">{% translate "No matches found." %}</div>
+{% endfor %}
+
+{% include "includes/pagination.html" %}
+{% endblock %}
