@@ -1,0 +1,13 @@
+{% load i18n %}{# Live region "live-now": rendered by the home page and by live-now/. #}
+{% if live_matches %}
+  <section class="mb-4" aria-labelledby="live-title">
+    <h2 class="h5 fw-bold mb-2 d-flex align-items-center gap-2" id="live-title">
+      <span class="status-pill is-live"><span class="live-dot" aria-hidden="true"></span>{% translate "Live now" %}</span>
+    </h2>
+    <div class="d-grid gap-2">
+      {% for match in live_matches %}
+        {% include "matches/_fixture_card.html" with compact=True %}
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}

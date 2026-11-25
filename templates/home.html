@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}{% translate "Home" %}{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/live.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+{# --- Featured championship --------------------------------------------- #}
+<section class="card scoreboard mb-4">
+  <div class="card-body p-4 p-lg-5">
+    {% if championship %}
+      <div class="meta mb-2">🏆 {{ championship.get_status_display }}{% if championship.start_date and championship.end_date %} · {{ championship.start_date|date:"d/m" }} – {{ championship.end_date|date:"d/m/Y" }}{% endif %}</div>
+      <h1 class="display-6 fw-bold mb-3">{{ championship }}</h1>
+      <p class="lead mb-4 opacity-75">{% translate "Results, fixtures and live matches of the regional championship." %}</p>
+      {% if summary %}
+        <div class="d-flex flex-wrap gap-4 mb-4">
+          <div><div class="h2 fw-bold mb-0">{{ summary.teams }}</div><div class="meta">{% translate "teams" %}</div></div>
+          <div><div class="h2 fw-bold mb-0">{{ summary.played }}</div><div class="meta">{% translate "matches played" %}</div></div>
+          <div><div class="h2 fw-bold mb-0">{{ summary.goals }}</div><div class="meta">{% translate "goals" %}</div></div>
+        </div>
+      {% endif %}
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-light fw-semibold" href="{% url 'matches:list' %}?championship={{ championship.pk }}">📅 {% translate "Fixtures and results" %}</a>
+        <a class="btn btn-outline-light" href="{% url 'championships:detail' championship.pk %}">📊 {% translate "Standings" %}</a>
+        <a class="btn btn-outline-light" href="{% url 'matches:stats' %}?championship={{ championship.pk }}">⚽ {% translate "Statistics" %}</a>
+      </div>
+    {% else %}
+      <h1 class="display-6 fw-bold mb-2">Copa AMVI</h1>
+      <p class="lead mb-0 opacity-75">{% translate "The championship has not been published yet. Come back soon!" %}</p>
+    {% endif %}
+  </div>
+</section>
+
+{# --- Live now (refreshes by itself) ---------------------------------- #}
+<div data-live-url="{% url 'home_live' %}" data-live-interval="{{ live_interval }}">
+  <div data-live-region="live-now">{% include "_live_now.html" %}</div>
+</div>
+
+<div class="row g-4">
+  {# --- Next fixtures ---------------------------------------------------- #}
+  <section class="col-lg-6" aria-labelledby="upcoming-title">
+    <div class="d-flex justify-content-between align-items-baseline mb-2">
+      <h2 class="h5 fw-bold mb-0" id="upcoming-title">{% translate "Next matches" %}</h2>
+      <a class="small" href="{% url 'matches:list' %}?status=SCHEDULED">{% translate "See all" %} →</a>
+    </div>
+    <div class="d-grid gap-2">
+      {% for match in upcoming_matches %}
+        {% include "matches/_fixture_card.html" with compact=True %}
+      {% empty %}
+        <div class="card card-body text-center text-body-secondary py-4">{% translate "No matches scheduled." %}</div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# --- Latest results --------------------------------------------------- #}
+  <section class="col-lg-6" aria-labelledby="results-title">
+    <div class="d-flex justify-content-between align-items-baseline mb-2">
+      <h2 class="h5 fw-bold mb-0" id="results-title">{% translate "Latest results" %}</h2>
+      <a class="small" href="{% url 'matches:list' %}?status=FINISHED">{% translate "See all" %} →</a>
+    </div>
+    <div class="d-grid gap-2">
+      {% for match in recent_results %}
+        {% include "matches/_fixture_card.html" with compact=True %}
+      {% empty %}
+        <div class="card card-body text-center text-body-secondary py-4">{% translate "No results yet." %}</div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

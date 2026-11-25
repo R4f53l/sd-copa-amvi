@@ -1,0 +1,7 @@
+{% load teams_tags %}<div class="d-flex align-items-center gap-2">
+  {% team_badge registration.championship_team size="1.75rem" %}
+  <div class="min-w-0">
+    <div class="fw-semibold text-truncate">{{ registration.player.display_name }}</div>
+    <a class="small text-body-secondary text-decoration-none" href="{% url 'teams:team_detail' registration.championship_team.team.pk %}">{{ registration.championship_team.team.name }}</a>
+  </div>
+</div>

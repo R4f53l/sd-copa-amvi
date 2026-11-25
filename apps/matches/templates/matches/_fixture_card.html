@@ -1,0 +1,31 @@
+{% load i18n humanize teams_tags %}
+{% comment %}
+Fixture card. Usage: {% include "matches/_fixture_card.html" with match=match %}
+Optional: compact=True hides the action buttons (the whole card stays a link);
+can_manage=True shows the "Edit" button.
+{% endcomment %}
+<div class="card fixture-card">
+  <div class="card-body py-3">
+    <div class="d-flex justify-content-between align-items-center gap-2 small text-body-secondary mb-2">
+      <span>📅 {{ match.scheduled_at|naturalday:"D, d/m"|capfirst }} · {{ match.scheduled_at|time:"H:i" }}{% if match.stadium %} · 📍 {{ match.stadium.name }}{% endif %}</span>
+      {% include "matches/_status.html" %}
+    </div>
+    <a class="fixture text-reset text-decoration-none" href="{% url 'matches:sheet' match.pk %}">
+      <div class="fixture-team is-home"><span class="fixture-name">{{ match.home_team.team.name }}</span>{% team_badge match.home_team %}</div>
+      {% if match.status == "SCHEDULED" or match.status == "POSTPONED" %}
+        <div class="fixture-score is-pending">×</div>
+      {% else %}
+        <div class="fixture-score">{{ match.home_score }}–{{ match.away_score }}</div>
+      {% endif %}
+      <div class="fixture-team">{% team_badge match.away_team %}<span class="fixture-name">{{ match.away_team.team.name }}</span></div>
+    </a>
+    {% if not compact %}
+      <div class="d-flex justify-content-end gap-2 mt-2">
+        <a class="btn btn-sm btn-primary" href="{% url 'matches:sheet' match.pk %}">📋 {% translate "Match sheet" %}</a>
+        {% if can_manage %}
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'matches:update' match.pk %}">✏️ {% translate "Edit" %}</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>

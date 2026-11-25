@@ -15,7 +15,7 @@
   {% with section=request.resolver_match.namespace %}
   <nav class="navbar navbar-expand-md navbar-dark amvi-navbar mb-4">
     <div class="container">
-      <a class="navbar-brand amvi-brand" href="{% url 'matches:list' %}">
+      <a class="navbar-brand amvi-brand" href="{% url 'home' %}">
         <span class="amvi-brand-mark" aria-hidden="true">⚽</span> Copa AMVI
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav"
@@ -25,12 +25,18 @@
       <div class="collapse navbar-collapse" id="main-nav">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link{% if section == 'matches' %} active{% endif %}"{% if section == 'matches' %} aria-current="page"{% endif %}
+            <a class="nav-link{% if section == 'matches' and request.resolver_match.url_name != 'stats' %} active{% endif %}"{% if section == 'matches' and request.resolver_match.url_name != 'stats' %} aria-current="page"{% endif %}
                href="{% url 'matches:list' %}">{% translate "Matches" %}</a>
           </li>
           <li class="nav-item">
             <a class="nav-link{% if section == 'championships' %} active{% endif %}"{% if section == 'championships' %} aria-current="page"{% endif %}
                href="{% url 'championships:list' %}">{% translate "Championships" %}</a>
+          </li>
+          <li class="nav-item">
+            {% with url_name=request.resolver_match.url_name %}
+            <a class="nav-link{% if section == 'matches' and url_name == 'stats' %} active{% endif %}"{% if section == 'matches' and url_name == 'stats' %} aria-current="page"{% endif %}
+               href="{% url 'matches:stats' %}">{% translate "Statistics" %}</a>
+            {% endwith %}
           </li>
           <li class="nav-item">
             <a class="nav-link{% if section == 'teams' %} active{% endif %}"{% if section == 'teams' %} aria-current="page"{% endif %}

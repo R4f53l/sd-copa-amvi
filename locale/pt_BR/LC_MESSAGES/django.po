@@ -1275,19 +1275,24 @@ msgstr "O número da camisa deve estar entre 1 e 99."
 
 #: apps/championships/forms.py
 msgid "The release date must be on or after the registration date."
-msgstr "A data de desligamento deve ser igual ou posterior à data de inscrição."
+msgstr ""
+"A data de desligamento deve ser igual ou posterior à data de inscrição."
 
 #: apps/championships/forms.py
 msgid "This player is already registered in this team."
 msgstr "Este jogador já está inscrito neste time."
 
 #: apps/championships/forms.py
-msgid "This shirt number is already in use by another active player on this team."
-msgstr "Este número de camisa já está em uso por outro jogador ativo neste time."
+msgid ""
+"This shirt number is already in use by another active player on this team."
+msgstr ""
+"Este número de camisa já está em uso por outro jogador ativo neste time."
 
 #: apps/championships/forms.py
 #, python-format
-msgid "This team has reached the limit of %(max)d active players in the championship."
+msgid ""
+"This team has reached the limit of %(max)d active players in the "
+"championship."
 msgstr "Este time atingiu o limite de %(max)d jogadores ativos no campeonato."
 
 #: apps/championships/views.py
@@ -1388,11 +1393,13 @@ msgstr "Editar inscrição"
 msgid "My assignments"
 msgstr "Meus jogos"
 
-#: templates/base.html apps/accounts/templates/accounts/table_official_form.html
+#: templates/base.html
+#: apps/accounts/templates/accounts/table_official_form.html
 msgid "Create table official"
 msgstr "Cadastrar mesário"
 
-#: templates/base.html apps/accounts/templates/accounts/password_change_form.html
+#: templates/base.html
+#: apps/accounts/templates/accounts/password_change_form.html
 msgid "Change password"
 msgstr "Alterar senha"
 
@@ -1460,3 +1467,206 @@ msgstr "Sua senha foi alterada com sucesso."
 #: apps/accounts/templates/accounts/password_change_done.html
 msgid "Back to matches"
 msgstr "Voltar aos jogos"
+
+#: apps/accounts/admin.py:49
+msgid "Role in the championship"
+msgstr "Papel no campeonato"
+
+#: apps/accounts/admin.py:101
+msgid "assigned matches"
+msgstr "jogos designados"
+
+#: apps/accounts/admin.py:52
+msgid ""
+"Administrators manage the whole championship. Table officials only run the "
+"matches assigned to them."
+msgstr ""
+"Administradores gerenciam todo o campeonato. Mesários só conduzem os jogos "
+"designados a eles."
+
+#: apps/matches/forms.py:23
+msgid "City"
+msgstr "Cidade"
+
+#: apps/matches/forms.py:28
+msgid "Where the match is played."
+msgstr "Onde o jogo acontece."
+
+#: apps/matches/forms.py:31
+msgid "Round"
+msgstr "Rodada"
+
+#: apps/matches/forms.py:43
+msgid "Team"
+msgstr "Time"
+
+#: templates/home.html
+msgid "Home"
+msgstr "Início"
+
+#: templates/home.html
+msgid "Results, fixtures and live matches of the regional championship."
+msgstr "Resultados, calendário e jogos ao vivo do campeonato regional."
+
+#: templates/home.html
+msgid "matches played"
+msgstr "jogos realizados"
+
+#: templates/home.html
+msgid "goals"
+msgstr "gols"
+
+#: templates/home.html
+msgid "Fixtures and results"
+msgstr "Jogos e resultados"
+
+#: templates/home.html
+msgid "Standings"
+msgstr "Classificação"
+
+#: templates/home.html
+msgid "The championship has not been published yet. Come back soon!"
+msgstr "O campeonato ainda não foi publicado. Volte em breve!"
+
+#: templates/home.html
+msgid "Live now"
+msgstr "Ao vivo agora"
+
+#: templates/home.html
+msgid "Next matches"
+msgstr "Próximos jogos"
+
+#: templates/home.html
+msgid "See all"
+msgstr "Ver todos"
+
+#: templates/home.html
+msgid "No matches scheduled."
+msgstr "Nenhum jogo agendado."
+
+#: templates/home.html
+msgid "Latest results"
+msgstr "Últimos resultados"
+
+#: templates/home.html
+msgid "No results yet."
+msgstr "Nenhum resultado ainda."
+
+#: apps/championships/templates/championships/championship_list.html
+msgid "View details"
+msgstr "Ver detalhes"
+
+#: apps/matches/templates/matches/match_list.html
+msgid "Follow fixtures, results, and the championship schedule."
+msgstr "Acompanhe os jogos, os resultados e o calendário do campeonato."
+
+#: apps/matches/templates/matches/match_list.html
+msgid "There are no matches scheduled yet."
+msgstr "Ainda não há jogos agendados."
+
+#: apps/matches/weather.py:32
+msgid "Clear sky"
+msgstr "Céu limpo"
+
+#: apps/matches/weather.py:33
+msgid "Partly cloudy"
+msgstr "Parcialmente nublado"
+
+#: apps/matches/weather.py:34
+msgid "Overcast"
+msgstr "Nublado"
+
+#: apps/matches/weather.py:35
+msgid "Fog"
+msgstr "Neblina"
+
+#: apps/matches/weather.py:36
+msgid "Drizzle"
+msgstr "Garoa"
+
+#: apps/matches/weather.py:37
+msgid "Rain"
+msgstr "Chuva"
+
+#: apps/matches/weather.py:38
+msgid "Snow"
+msgstr "Neve"
+
+#: apps/matches/weather.py:39
+msgid "Thunderstorm"
+msgstr "Tempestade"
+
+#: templates/base.html
+msgid "Statistics"
+msgstr "Estatísticas"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Forecast for kick-off (Open-Meteo)"
+msgstr "Previsão para o horário do jogo (Open-Meteo)"
+
+#: apps/matches/templates/matches/match_sheet.html
+msgid "Live broadcast"
+msgstr "Transmissão ao vivo"
+
+#: apps/matches/templates/matches/match_sheet.html
+#, python-format
+msgid "%(chance)s%% chance of rain"
+msgstr "%(chance)s%% de chance de chuva"
+
+#: apps/matches/templates/matches/statistics.html
+msgid "Updated with every event recorded on the match sheets."
+msgstr "Atualizadas a cada lance registrado nas súmulas."
+
+#: apps/matches/templates/matches/statistics.html
+msgid "Top scorers"
+msgstr "Artilharia"
+
+#: apps/matches/templates/matches/statistics.html
+msgid "Assists"
+msgstr "Assistências"
+
+#: apps/matches/templates/matches/statistics.html
+msgid "assists"
+msgstr "assistências"
+
+#: apps/matches/templates/matches/statistics.html
+msgid "Discipline"
+msgstr "Disciplina"
+
+#: apps/matches/templates/matches/statistics.html
+msgid "No cards shown yet."
+msgstr "Nenhum cartão aplicado ainda."
+
+#: apps/matches/templates/matches/statistics.html
+msgid "No goals scored yet."
+msgstr "Nenhum gol marcado ainda."
+
+#: apps/matches/templates/matches/statistics.html
+msgid "No assists yet."
+msgstr "Nenhuma assistência ainda."
+
+#: apps/teams/templates/teams/team_detail.html
+msgid "This team is not enrolled in any championship yet."
+msgstr "Este time ainda não está inscrito em nenhum campeonato."
+
+#: apps/teams/templates/teams/team_detail.html
+msgid "Campaign"
+msgstr "Campanha"
+
+#: apps/teams/templates/teams/team_detail.html
+msgid "Squad"
+msgstr "Elenco"
+
+#: apps/teams/templates/teams/team_detail.html
+msgid "No players registered."
+msgstr "Nenhum jogador inscrito."
+
+#: apps/teams/templates/teams/team_detail.html
+#, python-format
+msgid "Founded in %(year)s"
+msgstr "Fundado em %(year)s"
+
+#: apps/teams/templates/teams/team_detail.html
+#, python-format
+msgid "%(capacity)s seats"
+msgstr "%(capacity)s lugares"

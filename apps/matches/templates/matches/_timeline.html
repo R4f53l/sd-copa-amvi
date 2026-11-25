@@ -1,0 +1,49 @@
+{% load i18n humanize teams_tags matches_tags %}{# Live region "timeline": rendered by the sheet and by matches:live. #}
+<ul class="timeline">
+  {% for event in events %}
+    <li class="timeline-item{% if event.is_canceled %} is-canceled{% endif %}"{% with color=event.team|team_color %}{% if color %} style="--team-color: {{ color }}"{% endif %}{% endwith %}>
+      <span class="timeline-minute">{{ event.display_minute }}</span>
+      <span class="timeline-icon" aria-hidden="true">{{ event.event_type|event_icon }}</span>
+      <div>
+        <div class="timeline-title fw-semibold">
+          {{ event.event_type.name }}
+          {% if event.team %}<span class="text-body-secondary fw-normal">· {{ event.team.team.name }}</span>{% endif %}
+        </div>
+        {% for participant in event.participants.all %}
+          <div class="small"><span class="text-body-secondary">{{ participant.role.name }}:</span> {{ participant.player_registration.player.display_name }}</div>
+        {% endfor %}
+        {% if event.description %}<div class="small fst-italic text-body-secondary">“{{ event.description }}”</div>{% endif %}
+        <div class="small text-body-secondary mt-1">{{ event.get_period_display }}</div>
+        {% if event.is_canceled %}
+          <div class="small text-danger mt-1">
+            ⛔ {% translate "Canceled" %}{% if event.cancel_reason %}: {{ event.cancel_reason }}{% endif %}
+            {% if event.canceled_by %}· {{ event.canceled_by }}{% endif %}
+            {% if event.canceled_at %}· {{ event.canceled_at|naturaltime }}{% endif %}
+          </div>
+        {% endif %}
+        {% if can_officiate and not event.is_canceled and not locked %}
+          <form method="post" action="{% url 'matches:event_cancel' match.pk event.pk %}" class="collapse mt-2" id="cancel-{{ event.pk }}">
+            {% csrf_token %}
+            <div class="input-group input-group-sm">
+              <input class="form-control" name="{{ cancel_form.reason.html_name }}" maxlength="255" required
+                     placeholder="{% translate 'Why? e.g. offside' %}" aria-label="{% translate 'cancellation reason' %}">
+              <button class="btn btn-danger" type="submit">{% translate "Confirm cancellation" %}</button>
+            </div>
+          </form>
+        {% endif %}
+      </div>
+      {% if can_officiate and not event.is_canceled and not locked %}
+        <button class="btn btn-sm btn-link text-danger text-decoration-none p-0" type="button"
+                data-bs-toggle="collapse" data-bs-target="#cancel-{{ event.pk }}"
+                aria-controls="cancel-{{ event.pk }}" aria-expanded="false">{% translate "Cancel" %}</button>
+      {% else %}
+        <span></span>
+      {% endif %}
+    </li>
+  {% empty %}
+    <li class="text-center text-body-secondary py-5">
+      <div class="display-6 mb-2" aria-hidden="true">⏱️</div>
+      {% translate "No events recorded yet." %}
+    </li>
+  {% endfor %}
+</ul>

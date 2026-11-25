@@ -27,7 +27,7 @@ Sistema web do campeonato regional de futebol Copa AMVI, disputado por cidades d
   - Channels com Redis quando `REDIS_URL` está definido; senão, uma camada em memória.
   - Idiomas pt-BR (padrão) e inglês, fuso `America/Fortaleza` (Piauí) e CORS configurável.
 - **ASGI** (`config/asgi.py`): recebe HTTP e WebSocket. O WebSocket usa a mesma sessão de login do site. As rotas de WebSocket vêm de `apps/matches/routing.py`, que ainda está vazio.
-- **Rotas**: a raiz redireciona para `/matches/`, que apresenta o calendário público a visitantes e as ferramentas do painel a usuários autenticados. Campeonatos e times têm páginas públicas de leitura; ações de administração exigem login e papel apropriado. A API está em `/api/v1/`, com login JWT, e a troca de idioma em `/i18n/setlang/`.
+- **Rotas**: a raiz (`/`) é a página inicial pública, com o campeonato em andamento, jogos ao vivo, próximos jogos e últimos resultados. `/matches/` apresenta o calendário público a visitantes (com filtros por campeonato, cidade, rodada, situação e time) e as ferramentas do painel a usuários autenticados. Campeonatos e times têm páginas públicas de leitura; ações de administração exigem login e papel apropriado. A API está em `/api/v1/`, com login JWT, e a troca de idioma em `/i18n/setlang/`.
 - **Tradução pt-BR completa** dos modelos: nomes, campos, opções, textos de ajuda e mensagens de validação (veja [Tradução](#tradução-i18n)).
 - **Documentação OpenAPI 3** com Swagger UI e ReDoc (veja [Documentação da API](#documentação-da-api-swagger)).
 - **Modelagem completa dos 4 domínios**, com migrations iniciais geradas (detalhes abaixo).
@@ -39,24 +39,29 @@ Sistema web do campeonato regional de futebol Copa AMVI, disputado por cidades d
   - escalação por time: entre 7 e 11 titulares, reservas, um capitão, números de camisa únicos e só jogadores com inscrição ativa;
   - súmula: registro de eventos com os campos de jogador conforme o tipo (autor, assistência, entra/sai…), cancelamento com motivo e **placar recalculado automaticamente**, incluindo a disputa de pênaltis;
   - as regras ficam em `apps/matches/services.py`, para a API reutilizar.
-- **Login por sessão** (`/accounts/login/`) e layout compartilhado, com opções administrativas exibidas apenas para usuários autorizados.
+- **Contas**: login por sessão (`/accounts/login/`), recuperação e troca de senha, cadastro de mesários e painel "Minhas designações".
+- **Cadastros** de times, jogadores, estádios, cidades e campeonatos (com inscrição de times e jogadores), com páginas públicas de leitura.
+- **Django Admin** customizado em todos os apps (fieldsets, inlines, filtros), incluindo o `User` com papel e jogos designados.
+- **Portal público**:
+  - página do jogo com placar e lance a lance **atualizando sozinhos** (`static/js/live.js`), **player do YouTube** incorporado e **previsão do tempo** do estádio (API Open-Meteo);
+  - **Central de Estatísticas** (`/matches/stats/`): artilharia, assistências e disciplina;
+  - **página do time**: campanha, elenco, jogos e artilheiros;
+  - seção "Ao vivo agora" na página inicial, também atualizada sozinha.
+- **Municípios do IBGE**: `python manage.py import_ibge_cities` importa as cidades do Piauí (dados de governo).
+- **Roteiro da demonstração** da apresentação final em [`docs/DEMO.md`](docs/DEMO.md).
+- **Testes automatizados** de admin, permissões, cadastros, painel de jogos, estatísticas, atualização ao vivo e integrações externas (`python manage.py test apps`).
 
 ### 🚧 Ainda não implementado
 
-O cronograma completo, com as tarefas semanais de cada dev, está em [`docs/PLANO.md`](docs/PLANO.md).
+O cronograma completo, com as tarefas semanais de cada dev e a situação de cada uma, está em [`docs/PLANO.md`](docs/PLANO.md).
 
-- Páginas (views, formulários e templates): recuperação de senha, cadastros de times e campeonatos e portal público. O painel de jogos já existe (veja abaixo).
-- Serializers, viewsets e permissões por papel (admin / mesário). Os routers da API estão vazios.
-- Camada de serviço (`apps/matches/services.py`) que, ao registrar um evento, deve:
-  - atualizar o placar de `Match`;
-  - recalcular a classificação em `ChampionshipTeam`, incluindo os critérios de desempate e o campo `rank`;
-  - enviar o evento via WebSocket.
-- Regras da escalação: no máximo 11 titulares e bloqueio de jogadores suspensos ou com inscrição encerrada.
-- Controle de suspensões por cartões (usando `Championship.yellow_cards_for_suspension`).
-- Consumers WebSocket para os lances ao vivo.
-- Endpoints de estatísticas (artilharia, assistências, cartões).
-- Registro e customização dos modelos no Django Admin (fieldsets, inlines, `list_select_related`).
-- Testes automatizados.
+- Deploy na nuvem com domínio (Dockerfile e settings de produção).
+- Classificação automática: recalcular `ChampionshipTeam` (pontos, critérios de desempate e `rank`) ao encerrar um jogo. Hoje a tabela existe, mas não é atualizada.
+- Fluxo de jogo: avançar período e encerrar a partida.
+- Consumer WebSocket (`apps/matches/routing.py`). A página do jogo já se atualiza consultando o servidor; quando o consumer existir, ela passa a usá-lo automaticamente para atualizar na hora.
+- Controle automático de suspensões por cartões (hoje é manual, pela situação da inscrição).
+- Endpoints da API REST (os routers estão vazios).
+- Sessões anônimas (time favorito do torcedor).
 - Dockerfile e compose de produção (o `docker-compose.yml` atual sobe só o Postgres e o Redis de desenvolvimento).
 
 ---
@@ -306,6 +311,25 @@ Os dois comandos precisam do **GNU gettext** instalado:
 - Windows: instalador em https://mlocati.github.io/articles/gettext-iconv-windows.html
 
 O `django.mo` compilado fica versionado, então só quem altera traduções precisa do gettext.
+
+---
+
+## Integrações externas
+
+As duas APIs são públicas e gratuitas, sem chave:
+
+| Serviço | Uso | Onde |
+|---|---|---|
+| [Open-Meteo](https://open-meteo.com) | Previsão do tempo na hora do jogo, pelas coordenadas do estádio (até 16 dias à frente) | `apps/matches/weather.py` |
+| [IBGE Localidades](https://servicodados.ibge.gov.br/api/docs/localidades) | Importação dos municípios de um estado | `python manage.py import_ibge_cities` |
+
+As chamadas usam um cliente HTTP mínimo da biblioteca padrão (`apps/shared/http.py`), com tempo-limite curto. Se a API falhar, a previsão simplesmente não aparece; a página nunca quebra. A previsão fica em cache por 30 minutos.
+
+```bash
+python manage.py import_ibge_cities --dry-run          # mostra o que mudaria
+python manage.py import_ibge_cities                    # importa as cidades do PI
+python manage.py import_ibge_cities --update-names     # aplica a grafia oficial (ex.: Jaicós)
+```
 
 ---
 

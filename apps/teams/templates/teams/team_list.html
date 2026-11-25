@@ -60,7 +60,7 @@
               <div class="d-flex align-items-center gap-2">
                 {% team_badge team size="2.25rem" %}
                 <div>
-                  <div class="fw-semibold">{{ team.name }}</div>
+                  <a class="fw-semibold text-reset" href="{% url 'teams:team_detail' team.pk %}">{{ team.name }}</a>
                   {% if team.founded_year %}<div class="text-body-secondary small">{{ team.founded_year }}</div>{% endif %}
                 </div>
               </div>

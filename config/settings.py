@@ -122,8 +122,7 @@ AUTH_USER_MODEL = "accounts.User"
 # JWT is only for external API clients.
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "matches:list"
-# Back to the login page until the public home page exists (then "/").
-LOGOUT_REDIRECT_URL = "accounts:login"
+LOGOUT_REDIRECT_URL = "home"  # public landing page
 
 _PASSWORD_VALIDATION = "django.contrib.auth.password_validation"
 AUTH_PASSWORD_VALIDATORS = [
