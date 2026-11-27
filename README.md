@@ -251,8 +251,9 @@ python -c "from django.core.management.utils import get_random_secret_key as g; 
 | `POST` | `/api/v1/auth/token/` | Login: recebe `username` e `password` e devolve `access` e `refresh` |
 | `POST` | `/api/v1/auth/token/refresh/` | Renova o token de acesso |
 | — | `/api/v1/accounts/` | *(router vazio)* |
-| — | `/api/v1/teams/` | *(router vazio)* |
-| — | `/api/v1/championships/` | *(router vazio)* |
+| `GET` | `/api/v1/teams/` | Lista e consulta de times (somente leitura) |
+| `GET` | `/api/v1/championships/` | Lista e consulta de campeonatos publicados (somente leitura) |
+| `GET` | `/api/v1/championships/standings/` | Classificação; aceita filtros `championship`, `group` e `team` |
 | — | `/api/v1/matches/` | *(router vazio)* |
 | — | `/admin/` | Django Admin |
 | `GET` | `/api/docs/` | Documentação interativa (Swagger UI) |
