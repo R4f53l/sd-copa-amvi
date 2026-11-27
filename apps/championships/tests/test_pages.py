@@ -104,6 +104,25 @@ class ChampionshipsPagesTestCase(TestCase):
             403,
         )
 
+    def test_anonymous_visitor_can_save_and_clear_favorite_team(self):
+        detail_url = reverse(
+            "championships:detail", args=[self.championship.pk]
+        )
+        favorite_url = reverse(
+            "championships:favorite", args=[self.championship.pk]
+        )
+        response = self.client.post(
+            favorite_url, {"entry_id": str(self.entry_a.pk)}
+        )
+        self.assertRedirects(response, detail_url)
+        page = self.client.get(detail_url)
+        self.assertContains(page, "#fff8db")
+        self.assertContains(page, "value=\"\"", html=False)
+
+        response = self.client.post(favorite_url, {"entry_id": ""})
+        self.assertRedirects(response, detail_url)
+        self.assertNotContains(self.client.get(detail_url), "#fff8db")
+
     def test_create_and_update_championship(self):
         self.login(self.admin)
         response = self.client.post(

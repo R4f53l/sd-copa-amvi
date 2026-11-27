@@ -60,7 +60,7 @@
       </thead>
       <tbody>
         {% for entry in team_entries %}
-          <tr{% if entry.is_withdrawn %} class="opacity-50"{% endif %}>
+          <tr{% if entry.is_withdrawn %} class="opacity-50"{% endif %}{% if entry.is_favorite %} style="background-color: #fff8db"{% endif %}>
             <td class="fw-bold text-body-secondary">{{ entry.rank|default:forloop.counter }}</td>
             <td>
               <div class="d-flex align-items-center gap-2">
@@ -87,9 +87,17 @@
               <span class="badge rounded-pill text-bg-secondary">{{ entry.active_players }} / {{ championship.max_players_per_team }}</span>
             </td>
             <td class="text-end">
-              <a class="btn btn-sm btn-outline-primary" href="{% url 'championships:roster' championship.pk entry.pk %}">
-                🏃 {% translate "Players" %}
-              </a>
+              <div class="d-flex justify-content-end gap-1">
+                <form method="post" action="{% url 'championships:favorite' championship.pk %}">
+                  {% csrf_token %}
+                  {% if entry.is_favorite %}
+                    <button class="btn btn-sm btn-warning" type="submit" name="entry_id" value="">★</button>
+                  {% else %}
+                    <button class="btn btn-sm btn-outline-warning" type="submit" name="entry_id" value="{{ entry.pk }}">☆</button>
+                  {% endif %}
+                </form>
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'championships:roster' championship.pk entry.pk %}">🏃 {% translate "Players" %}</a>
+              </div>
             </td>
           </tr>
         {% empty %}
@@ -103,4 +111,19 @@
     </table>
   </div>
 </div>
+
+{% if knockout_matches %}
+<section class="card mb-4">
+  <div class="card-header bg-white py-3"><h2 class="h6 fw-bold mb-0">{% translate "Knockout stage" %}</h2></div>
+  <div class="list-group list-group-flush">
+    {% for match in knockout_matches %}
+      <div class="list-group-item d-flex flex-wrap justify-content-between gap-2">
+        <span class="small text-body-secondary">{{ match.get_stage_display }}</span>
+        <span class="fw-semibold">{{ match.home_team.team.name }} {{ match.home_score }}–{{ match.away_score }} {{ match.away_team.team.name }}</span>
+        <span class="small text-body-secondary">{{ match.scheduled_at|date:"d/m/Y H:i" }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
 {% endblock %}

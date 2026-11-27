@@ -88,6 +88,16 @@ def save_lineup(match, team, entries):
     by ``LineupFormSet``; this function only persists the result.
     """
     ensure_editable(match)
+    unavailable = [
+        entry["registration"]
+        for entry in entries
+        if entry["registration"].championship_team_id != team.pk
+        or entry["registration"].status != PlayerRegistration.Status.ACTIVE
+    ]
+    if unavailable:
+        raise ValidationError(
+            _("Only active players registered for this team may be listed.")
+        )
     match.lineups.filter(team=team).delete()
     Lineup.objects.bulk_create(
         Lineup(

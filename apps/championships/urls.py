@@ -10,6 +10,11 @@ urlpatterns = [
     path("new/", views.ChampionshipCreateView.as_view(), name="create"),
     path("<uuid:pk>/", views.ChampionshipDetailView.as_view(), name="detail"),
     path(
+        "<uuid:pk>/favorite/",
+        views.FavoriteTeamView.as_view(),
+        name="favorite",
+    ),
+    path(
         "<uuid:pk>/edit/",
         views.ChampionshipUpdateView.as_view(),
         name="update",

@@ -5,6 +5,7 @@ from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Count, Q
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -17,6 +18,7 @@ from django.views.generic import (
 )
 
 from apps.accounts.decorators import AdminRequiredMixin
+from apps.matches.models import Match
 
 from .forms import (
     ChampionshipForm,
@@ -75,6 +77,9 @@ class ChampionshipDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        favorite_team_id = str(
+            self.request.session.get(f"favorite_team_{self.object.pk}", "")
+        )
         team_entries = (
             self.object.team_entries.select_related("team__city")
             .annotate(
@@ -85,11 +90,47 @@ class ChampionshipDetailView(DetailView):
             )
             .order_by("group", "rank", "-points", "-wins", "team__name")
         )
+        for entry in team_entries:
+            entry.is_favorite = str(entry.pk) == favorite_team_id
         context.update(
             team_entries=team_entries,
             can_manage=can_manage_championships(self.request.user),
+            knockout_matches=(
+                self.object.matches.filter(
+                    stage__in=(
+                        Match.Stage.ROUND_OF_16,
+                        Match.Stage.QUARTER_FINAL,
+                        Match.Stage.SEMI_FINAL,
+                        Match.Stage.THIRD_PLACE,
+                        Match.Stage.FINAL,
+                    )
+                )
+                .select_related("home_team__team", "away_team__team")
+                .order_by("stage", "scheduled_at")
+            ),
         )
         return context
+
+
+class FavoriteTeamView(DetailView):
+    """Set or clear the visitor's favorite team for this edition."""
+
+    model = Championship
+    http_method_names = ["post", "head", "options"]
+
+    def post(self, request, *args, **kwargs):
+        championship = self.get_object()
+        entry_id = request.POST.get("entry_id", "")
+        key = f"favorite_team_{championship.pk}"
+        if not entry_id:
+            request.session.pop(key, None)
+        elif championship.team_entries.filter(pk=entry_id).exists():
+            request.session[key] = str(entry_id)
+        else:
+            return HttpResponseBadRequest(
+                _("Invalid team for this championship.")
+            )
+        return redirect("championships:detail", pk=championship.pk)
 
 
 class ChampionshipFormMixin(AdminRequiredMixin):

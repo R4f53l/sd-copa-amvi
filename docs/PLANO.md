@@ -139,9 +139,9 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] **Primeiro deploy de teste na nuvem**
 
 **Dev 2**
-- [ ] `recompute_standings()`: pontos, vitórias, saldo, gols pró, confronto direto e cartões
-- [ ] Gravar a posição final em `ChampionshipTeam.rank`
-- [ ] Testes
+- [x] `recompute_standings()`: pontos, vitórias, saldo, gols pró, confronto direto e cartões (implementado em `apps/championships/services.py`; requer integração com o fluxo de encerramento do Dev 3)
+- [x] Gravar a posição final em `ChampionshipTeam.rank` por grupo
+- [x] Testes de classificação e suspensão adicionados (execução pendente: dependências Python não estão instaladas neste ambiente)
 
 **Dev 3**
 - [ ] `apps/matches/services.py`, com cada operação numa transação. Ao criar um evento junto com os participantes, validar aqui o papel e a presença do jogador na súmula, porque `MatchEventParticipant.clean()` só roda com o evento já salvo:
@@ -161,9 +161,9 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] E-mail SMTP real (Amazon SES, Brevo ou Gmail)
 
 **Dev 2**
-- [ ] Suspensões por acúmulo de cartões
-- [ ] Bloqueio de jogadores suspensos na escalação
-- [ ] Visualização do mata-mata
+- [x] Suspensões por acúmulo de cartões (aplicadas ao recalcular classificação de jogos encerrados; liberação após cumprir suspensão ainda é administrativa)
+- [x] Bloqueio de jogadores suspensos na escalação
+- [x] Visualização dos jogos do mata-mata na página do campeonato
 
 **Dev 3**
 - [ ] Consumer do Channels, com um grupo por jogo
@@ -179,7 +179,7 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Internacionalização — **parcial**: seletor de idioma no layout ✅, modelos e telas de jogos, times, campeonatos e página inicial traduzidos ✅. Falta: as telas de senha (`apps/accounts/templates/accounts/password_*`) foram escritas com o texto-fonte em português; reescrever com texto em inglês e traduzir no `.po`, para funcionarem em inglês
 
 **Dev 2**
-- [ ] Endpoints DRF só de leitura para times, campeonatos e classificação
+- [x] Endpoints DRF só de leitura para times, campeonatos e classificação
 
 **Dev 3**
 - [ ] Endpoints DRF de jogos, eventos e estatísticas, documentados no Swagger
@@ -196,7 +196,7 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Documentar o processo de migração e carga inicial (artefato obrigatório)
 
 **Dev 2**
-- [ ] Time favorito salvo na sessão anônima (requisito desejável) e destacado na tabela
+- [x] Time favorito salvo na sessão e destacado na tabela (inclui visitantes anônimos)
 
 **Dev 3**
 - [ ] Casos de borda: prorrogação, pênaltis, W.O. e evento cancelado durante o jogo
