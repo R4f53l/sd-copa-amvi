@@ -1,11 +1,19 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    UpdateView,
+)
 
 from apps.accounts.decorators import AdminRequiredMixin
+from apps.championships.models import PlayerRegistration
+from apps.championships.selectors import featured_championship
+from apps.matches import stats
+from apps.matches.models import Match
 
 from .forms import CityForm, PlayerForm, StadiumForm, TeamForm
 from .models import City, Player, Stadium, Team
@@ -217,3 +225,88 @@ class CityUpdateView(FeedbackFormMixin, UpdateView):
     template_name = "teams/city_form.html"
     success_url = reverse_lazy("teams:city_list")
     success_message = _("City %(object)s updated.")
+
+
+class TeamDetailView(DetailView):
+    """Public team page: profile, campaign, squad, fixtures and scorers."""
+
+    model = Team
+    template_name = "teams/team_detail.html"
+    context_object_name = "team"
+    MATCHES_LIMIT = 5
+
+    def get_queryset(self):
+        return Team.objects.select_related("city", "home_stadium__city")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        team = self.object
+        entries = team.championship_entries.select_related(
+            "championship"
+        ).order_by("-championship__season", "championship__name")
+
+        featured = featured_championship()
+        entry = next(
+            (
+                e
+                for e in entries
+                if e.championship_id == getattr(featured, "pk", None)
+            ),
+            None,
+        ) or (entries[0] if entries else None)
+
+        context.update(entries=entries, entry=entry)
+        if entry is None:
+            return context
+
+        matches = (
+            Match.objects.filter(championship=entry.championship)
+            .filter(Q(home_team=entry) | Q(away_team=entry))
+            .exclude(status=Match.Status.CANCELED)
+            .select_related(
+                "championship",
+                "home_team__team",
+                "away_team__team",
+                "stadium__city",
+            )
+        )
+        finished = list(
+            matches.filter(status=Match.Status.FINISHED).order_by(
+                "-scheduled_at"
+            )
+        )
+        context.update(
+            squad=entry.player_registrations.exclude(
+                status=PlayerRegistration.Status.RELEASED
+            )
+            .select_related("player")
+            .order_by("shirt_number", "player__full_name"),
+            upcoming=matches.exclude(status=Match.Status.FINISHED).order_by(
+                "scheduled_at"
+            )[: self.MATCHES_LIMIT],
+            results=finished[: self.MATCHES_LIMIT],
+            campaign=campaign(entry, finished),
+            scorers=stats.top_scorers(entry.championship, team=team, limit=5),
+        )
+        return context
+
+
+def campaign(entry, finished_matches):
+    """Played/won/drawn/lost and goals of ``entry`` in finished matches."""
+    record = {"played": 0, "wins": 0, "draws": 0, "losses": 0}
+    goals_for = goals_against = 0
+    for match in finished_matches:
+        is_home = match.home_team_id == entry.pk
+        scored = match.home_score if is_home else match.away_score
+        conceded = match.away_score if is_home else match.home_score
+        goals_for += scored
+        goals_against += conceded
+        record["played"] += 1
+        if scored > conceded:
+            record["wins"] += 1
+        elif scored == conceded:
+            record["draws"] += 1
+        else:
+            record["losses"] += 1
+    record.update(goals_for=goals_for, goals_against=goals_against)
+    return record

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n humanize teams_tags %}
+{% load i18n %}
 
 {% block title %}{% translate "Matches" %}{% endblock %}
 
@@ -30,23 +30,27 @@
 
 <form method="get" class="card card-body mb-4">
   <div class="row g-2 align-items-end">
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-6 col-lg-3">
       <label class="form-label small fw-semibold" for="{{ form.championship.id_for_label }}">{{ form.championship.label }}</label>
       {{ form.championship }}
     </div>
-    <div class="col-4 col-md-2">
+    <div class="col-8 col-md-4 col-lg-2">
+      <label class="form-label small fw-semibold" for="{{ form.city.id_for_label }}" title="{{ form.city.help_text }}">{{ form.city.label }}</label>
+      {{ form.city }}
+    </div>
+    <div class="col-4 col-md-2 col-lg-1">
       <label class="form-label small fw-semibold" for="{{ form.round.id_for_label }}">{{ form.round.label }}</label>
       {{ form.round }}
     </div>
-    <div class="col-8 col-md-2">
+    <div class="col-6 col-md-4 col-lg-2">
       <label class="form-label small fw-semibold" for="{{ form.status.id_for_label }}">{{ form.status.label }}</label>
       {{ form.status }}
     </div>
-    <div class="col-8 col-md-2">
+    <div class="col-6 col-md-4 col-lg-2">
       <label class="form-label small fw-semibold" for="{{ form.q.id_for_label }}">{{ form.q.label }}</label>
       {{ form.q }}
     </div>
-    <div class="col-4 col-md-2 d-flex gap-1">
+    <div class="col-12 col-md-4 col-lg-2 d-flex gap-1">
       <button class="btn btn-outline-primary flex-fill" type="submit">{% translate "Filter" %}</button>
       {% if querystring %}
         <a class="btn btn-link px-2" href="{% url 'matches:list' %}" title="{% translate 'Clear filters' %}" aria-label="{% translate 'Clear filters' %}">✕</a>
@@ -65,29 +69,7 @@
     </div>
     <div class="d-grid gap-2 mb-3">
       {% for match in round.list %}
-        <div class="card fixture-card">
-          <div class="card-body py-3">
-            <div class="d-flex justify-content-between align-items-center small text-body-secondary mb-2">
-              <span>📅 {{ match.scheduled_at|naturalday:"D, d/m"|capfirst }} · {{ match.scheduled_at|time:"H:i" }}{% if match.stadium %} · 📍 {{ match.stadium.name }}{% endif %}</span>
-              {% include "matches/_status.html" %}
-            </div>
-            <a class="fixture text-reset text-decoration-none" href="{% url 'matches:sheet' match.pk %}">
-              <div class="fixture-team is-home"><span>{{ match.home_team.team.name }}</span>{% team_badge match.home_team %}</div>
-              {% if match.status == "SCHEDULED" or match.status == "POSTPONED" %}
-                <div class="fixture-score is-pending">×</div>
-              {% else %}
-                <div class="fixture-score">{{ match.home_score }}–{{ match.away_score }}</div>
-              {% endif %}
-              <div class="fixture-team">{% team_badge match.away_team %}<span>{{ match.away_team.team.name }}</span></div>
-            </a>
-            <div class="d-flex justify-content-end gap-2 mt-2">
-              <a class="btn btn-sm btn-primary" href="{% url 'matches:sheet' match.pk %}">📋 {% translate "Match sheet" %}</a>
-              {% if can_manage %}
-                <a class="btn btn-sm btn-outline-secondary" href="{% url 'matches:update' match.pk %}">✏️ {% translate "Edit" %}</a>
-              {% endif %}
-            </div>
-          </div>
-        </div>
+        {% include "matches/_fixture_card.html" %}
       {% endfor %}
     </div>
   {% endfor %}

@@ -1,4 +1,6 @@
-"""Template helpers for match pages (icons and status styling)."""
+"""Template helpers for match pages (icons, status, broadcast)."""
+
+import re
 
 from django import template
 
@@ -51,3 +53,20 @@ def status_class(match):
     if match.is_live:
         return "is-live"
     return STATUS_CLASSES.get(match.status, "")
+
+
+YOUTUBE_VIDEO = re.compile(
+    r"^https?://(?:www\.|m\.)?"
+    r"(?:youtube\.com/(?:watch\?(?:[^#]*&)?v=|live/|embed/|shorts/)"
+    r"|youtu\.be/)"
+    r"(?P<id>[\w-]{11})"
+)
+
+
+@register.filter
+def youtube_embed_url(url):
+    """Privacy-friendly embed URL for a YouTube link, or "" otherwise."""
+    match = YOUTUBE_VIDEO.match(url or "")
+    if match is None:
+        return ""
+    return f"https://www.youtube-nocookie.com/embed/{match['id']}"

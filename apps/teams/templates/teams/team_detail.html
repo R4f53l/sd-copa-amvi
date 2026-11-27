@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load i18n humanize teams_tags %}
+
+{% block title %}{{ team.name }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb small">
+    <li class="breadcrumb-item"><a href="{% url 'teams:team_list' %}">{% translate "Teams" %}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ team.name }}</li>
+  </ol>
+</nav>
+
+{# --- Profile ------------------------------------------------------------- #}
+<section class="card mb-4 overflow-hidden">
+  <div class="card-body p-4 d-flex flex-wrap align-items-center gap-4"
+       {% with color=team|team_color %}{% if color %}style="border-top: 6px solid {{ color }}"{% endif %}{% endwith %}>
+    {% team_badge team size="5.5rem" %}
+    <div class="flex-grow-1">
+      <h1 class="h2 fw-bold mb-1">{{ team.name }}</h1>
+      <div class="text-body-secondary d-flex flex-wrap gap-3">
+        <span>📍 {{ team.city }}</span>
+        {% if team.founded_year %}<span>📅 {% blocktranslate with year=team.founded_year %}Founded in {{ year }}{% endblocktranslate %}</span>{% endif %}
+        {% if team.home_stadium %}
+          <span>🏟️ {{ team.home_stadium.name }}{% if team.home_stadium.capacity %} · {% blocktranslate with capacity=team.home_stadium.capacity|intcomma %}{{ capacity }} seats{% endblocktranslate %}{% endif %}</span>
+        {% endif %}
+      </div>
+    </div>
+    {% if user.is_authenticated and user.is_admin %}
+      <a class="btn btn-sm btn-outline-secondary" href="{% url 'teams:team_update' team.pk %}">✏️ {% translate "Edit" %}</a>
+    {% endif %}
+  </div>
+</section>
+
+{% if not entry %}
+  <div class="card card-body text-center py-5 text-body-secondary">{% translate "This team is not enrolled in any championship yet." %}</div>
+{% else %}
+  {# --- Campaign --------------------------------------------------------- #}
+  <section class="mb-4" aria-labelledby="campaign-title">
+    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-2">
+      <h2 class="h5 fw-bold mb-0" id="campaign-title">{% translate "Campaign" %} · {{ entry.championship }}</h2>
+      <a class="small" href="{% url 'championships:detail' entry.championship.pk %}">{% translate "Standings" %} →</a>
+    </div>
+    <div class="row g-2 text-center">
+      <div class="col-4 col-md-2"><div class="card card-body py-3"><div class="h3 fw-bold mb-0">{{ campaign.played }}</div><div class="small text-body-secondary">{% translate "played" %}</div></div></div>
+      <div class="col-4 col-md-2"><div class="card card-body py-3"><div class="h3 fw-bold mb-0 text-success">{{ campaign.wins }}</div><div class="small text-body-secondary">{% translate "wins" %}</div></div></div>
+      <div class="col-4 col-md-2"><div class="card card-body py-3"><div class="h3 fw-bold mb-0">{{ campaign.draws }}</div><div class="small text-body-secondary">{% translate "draws" %}</div></div></div>
+      <div class="col-4 col-md-2"><div class="card card-body py-3"><div class="h3 fw-bold mb-0 text-danger">{{ campaign.losses }}</div><div class="small text-body-secondary">{% translate "losses" %}</div></div></div>
+      <div class="col-4 col-md-2"><div class="card card-body py-3"><div class="h3 fw-bold mb-0">{{ campaign.goals_for }}</div><div class="small text-body-secondary">{% translate "goals for" %}</div></div></div>
+      <div class="col-4 col-md-2"><div class="card card-body py-3"><div class="h3 fw-bold mb-0">{{ campaign.goals_against }}</div><div class="small text-body-secondary">{% translate "goals against" %}</div></div></div>
+    </div>
+  </section>
+
+  <div class="row g-4">
+    {# --- Fixtures --------------------------------------------------------- #}
+    <div class="col-lg-7">
+      <h2 class="h5 fw-bold mb-2">{% translate "Next matches" %}</h2>
+      <div class="d-grid gap-2 mb-4">
+        {% for match in upcoming %}
+          {% include "matches/_fixture_card.html" with compact=True %}
+        {% empty %}
+          <div class="card card-body text-center text-body-secondary py-4">{% translate "No matches scheduled." %}</div>
+        {% endfor %}
+      </div>
+
+      <h2 class="h5 fw-bold mb-2">{% translate "Latest results" %}</h2>
+      <div class="d-grid gap-2">
+        {% for match in results %}
+          {% include "matches/_fixture_card.html" with compact=True %}
+        {% empty %}
+          <div class="card card-body text-center text-body-secondary py-4">{% translate "No results yet." %}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      {# --- Team scorers --------------------------------------------------- #}
+      {% translate "Top scorers" as title %}{% translate "goals" as unit %}
+      <div class="mb-4">
+        {% include "matches/_ranking.html" with title=title icon="⚽" rows=scorers unit=unit empty_message=_("No goals scored yet.") %}
+      </div>
+
+      {# --- Squad ----------------------------------------------------------- #}
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h5 fw-bold mb-3">👕 {% translate "Squad" %}</h2>
+          <ul class="list-unstyled mb-0">
+            {% for registration in squad %}
+              <li class="d-flex align-items-center gap-2 py-1{% if not forloop.last %} border-bottom{% endif %}">
+                <span class="badge text-bg-light border" style="min-width: 2.2rem">{{ registration.shirt_number|default:"—" }}</span>
+                <span class="flex-grow-1">{{ registration.player.display_name }}</span>
+                {% if registration.player.position %}<span class="small text-body-secondary">{{ registration.player.get_position_display }}</span>{% endif %}
+                {% if registration.status == "SUSPENDED" %}<span class="badge text-bg-warning">{{ registration.get_status_display }}</span>{% endif %}
+              </li>
+            {% empty %}
+              <li class="text-body-secondary small">{% translate "No players registered." %}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

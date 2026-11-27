@@ -12,7 +12,8 @@
 </nav>
 
 {# --- Scoreboard ---------------------------------------------------------- #}
-<div class="card scoreboard mb-4">
+<div class="card scoreboard mb-4"
+     {% if live_interval %}data-live-url="{% url 'matches:live' match.pk %}" data-live-interval="{{ live_interval }}"{% if live_websocket %} data-live-ws="/ws/matches/{{ match.pk }}/"{% endif %}{% endif %}>
   <div class="card-body p-4">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 meta mb-3">
       <span>
@@ -20,22 +21,23 @@
       </span>
       <span>📅 {{ match.scheduled_at|naturalday:"D, d/m"|capfirst }} · {{ match.scheduled_at|time:"H:i" }}{% if match.stadium %} · 📍 {{ match.stadium }}{% endif %}</span>
     </div>
+    {% if forecast %}
+      <div class="meta text-center mb-3" title="{% translate 'Forecast for kick-off (Open-Meteo)' %}">
+        {{ forecast.icon }} {{ forecast.description }} · {{ forecast.temperature|floatformat:0 }}°C{% if forecast.rain_chance is not None %} · 💧 {% blocktranslate with chance=forecast.rain_chance %}{{ chance }}% chance of rain{% endblocktranslate %}{% endif %}
+      </div>
+    {% endif %}
 
     <div class="row align-items-center g-2">
       <div class="col-4 scoreboard-team">{% team_badge match.home_team size="4rem" %}<span>{{ match.home_team.team.name }}</span></div>
-      <div class="col-4 text-center">
-        <div class="scoreboard-score">{{ match.home_score }}<span class="opacity-50 mx-2">–</span>{{ match.away_score }}</div>
-        {% if match.home_penalty_score is not None %}
-          <div class="meta mt-1">{% translate "Penalties" %}: {{ match.home_penalty_score }} – {{ match.away_penalty_score }}</div>
-        {% endif %}
-        <div class="mt-2">{% include "matches/_status.html" %}</div>
+      <div class="col-4 text-center" data-live-region="score" aria-live="polite">
+        {% include "matches/_live_score.html" %}
       </div>
       <div class="col-4 scoreboard-team">{% team_badge match.away_team size="4rem" %}<span>{{ match.away_team.team.name }}</span></div>
     </div>
 
-    {% if can_manage or match.streaming_url %}
+    {% if can_manage or match.streaming_url and not match.streaming_url|youtube_embed_url %}
       <div class="d-flex justify-content-center flex-wrap gap-2 mt-4">
-        {% if match.streaming_url %}
+        {% if match.streaming_url and not match.streaming_url|youtube_embed_url %}
           <a class="btn btn-sm btn-light" href="{{ match.streaming_url }}" target="_blank" rel="noopener">▶ {% translate "Watch the broadcast" %}</a>
         {% endif %}
         {% if can_manage %}
@@ -121,60 +123,24 @@
   {% endif %}
 
   {# --- Timeline -------------------------------------------------------- #}
-  <div class="{% if locked %}col-12{% else %}col-lg-7 order-lg-1{% endif %}">
+  <div class="{% if locked or not can_officiate %}col-12{% else %}col-lg-7 order-lg-1{% endif %}">
+    {% with embed=match.streaming_url|youtube_embed_url %}
+      {% if embed %}
+        <section class="card overflow-hidden mb-4 broadcast" aria-label="{% translate 'Live broadcast' %}">
+          <div class="ratio ratio-16x9">
+            <iframe src="{{ embed }}" title="{% translate 'Live broadcast' %} · {{ match }}" loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          </div>
+        </section>
+      {% endif %}
+    {% endwith %}
     <div class="d-flex justify-content-between align-items-baseline mb-2">
       <h2 class="h5 fw-bold mb-0">{% translate "Timeline" %}</h2>
       <span class="small text-body-secondary">{% translate "Most recent first" %}</span>
     </div>
-    <div class="card">
-      <ul class="timeline">
-        {% for event in events %}
-          <li class="timeline-item{% if event.is_canceled %} is-canceled{% endif %}"{% with color=event.team|team_color %}{% if color %} style="--team-color: {{ color }}"{% endif %}{% endwith %}>
-            <span class="timeline-minute">{{ event.display_minute }}</span>
-            <span class="timeline-icon" aria-hidden="true">{{ event.event_type|event_icon }}</span>
-            <div>
-              <div class="timeline-title fw-semibold">
-                {{ event.event_type.name }}
-                {% if event.team %}<span class="text-body-secondary fw-normal">· {{ event.team.team.name }}</span>{% endif %}
-              </div>
-              {% for participant in event.participants.all %}
-                <div class="small"><span class="text-body-secondary">{{ participant.role.name }}:</span> {{ participant.player_registration.player.display_name }}</div>
-              {% endfor %}
-              {% if event.description %}<div class="small fst-italic text-body-secondary">“{{ event.description }}”</div>{% endif %}
-              <div class="small text-body-secondary mt-1">{{ event.get_period_display }}</div>
-              {% if event.is_canceled %}
-                <div class="small text-danger mt-1">
-                  ⛔ {% translate "Canceled" %}{% if event.cancel_reason %}: {{ event.cancel_reason }}{% endif %}
-                  {% if event.canceled_by %}· {{ event.canceled_by }}{% endif %}
-                  {% if event.canceled_at %}· {{ event.canceled_at|naturaltime }}{% endif %}
-                </div>
-              {% endif %}
-              {% if can_officiate and not event.is_canceled and not locked %}
-                <form method="post" action="{% url 'matches:event_cancel' match.pk event.pk %}" class="collapse mt-2" id="cancel-{{ event.pk }}">
-                  {% csrf_token %}
-                  <div class="input-group input-group-sm">
-                    <input class="form-control" name="{{ cancel_form.reason.html_name }}" maxlength="255" required
-                           placeholder="{% translate 'Why? e.g. offside' %}" aria-label="{% translate 'cancellation reason' %}">
-                    <button class="btn btn-danger" type="submit">{% translate "Confirm cancellation" %}</button>
-                  </div>
-                </form>
-              {% endif %}
-            </div>
-            {% if can_officiate and not event.is_canceled and not locked %}
-              <button class="btn btn-sm btn-link text-danger text-decoration-none p-0" type="button"
-                      data-bs-toggle="collapse" data-bs-target="#cancel-{{ event.pk }}"
-                      aria-controls="cancel-{{ event.pk }}" aria-expanded="false">{% translate "Cancel" %}</button>
-            {% else %}
-              <span></span>
-            {% endif %}
-          </li>
-        {% empty %}
-          <li class="text-center text-body-secondary py-5">
-            <div class="display-6 mb-2" aria-hidden="true">⏱️</div>
-            {% translate "No events recorded yet." %}
-          </li>
-        {% endfor %}
-      </ul>
+    <div class="card" data-live-region="timeline">
+      {% include "matches/_timeline.html" %}
     </div>
   </div>
 </div>
@@ -189,4 +155,5 @@
 
 {% block extra_js %}
 <script src="{% static 'js/match_sheet.js' %}" defer></script>
+<script src="{% static 'js/live.js' %}" defer></script>
 {% endblock %}

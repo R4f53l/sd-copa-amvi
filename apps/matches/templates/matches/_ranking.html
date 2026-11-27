@@ -1,0 +1,24 @@
+{% load i18n %}
+{% comment %}
+Ranking card. Usage:
+{% include "matches/_ranking.html" with title=... icon="⚽" rows=queryset unit=... empty_message=... %}
+Each row is a PlayerRegistration annotated with ``total``.
+{% endcomment %}
+<div class="card h-100">
+  <div class="card-body">
+    <h2 class="h5 fw-bold mb-3">{{ icon }} {{ title }}</h2>
+    {% if rows %}
+      <ol class="list-unstyled mb-0">
+        {% for row in rows %}
+          <li class="d-flex align-items-center gap-2 py-2{% if not forloop.last %} border-bottom{% endif %}">
+            <span class="text-body-secondary fw-semibold" style="min-width: 1.5rem">{{ forloop.counter }}</span>
+            <div class="flex-grow-1 min-w-0">{% include "matches/_ranking_player.html" with registration=row %}</div>
+            <span class="fs-5 fw-bold" aria-label="{{ row.total }} {{ unit }}">{{ row.total }}</span>
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p class="text-body-secondary small mb-0">{{ empty_message }}</p>
+    {% endif %}
+  </div>
+</div>

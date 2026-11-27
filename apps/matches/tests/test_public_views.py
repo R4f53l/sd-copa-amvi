@@ -86,7 +86,7 @@ class PublicMatchListTests(TestCase):
         self.assertEqual(response.context["page_obj"].paginator.count, 1)
         self.assertEqual(
             set(response.context["form"].fields),
-            {"championship", "round", "status", "q"},
+            {"championship", "city", "round", "status", "q"},
         )
         self.assertContains(response, "2–1")
 

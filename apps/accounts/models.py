@@ -32,13 +32,18 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.is_superuser or self.is_staff or self.role == self.Role.ADMIN
+        return (
+            self.is_superuser or self.is_staff or self.role == self.Role.ADMIN
+        )
 
     @property
     def is_table_official(self):
         return self.role == self.Role.TABLE_OFFICIAL
 
     def save(self, *args, **kwargs):
+        # Superusers (e.g. from ``createsuperuser``) are administrators.
+        if self.is_superuser:
+            self.role = self.Role.ADMIN
         # Admins manage the tournament through the Django admin as well.
         if self.role == self.Role.ADMIN:
             self.is_staff = True

@@ -9,6 +9,8 @@ Plano semanal para uma equipe de 4 desenvolvedores, alinhado às entregas da dis
 | IV | Apresentação final + deploy na nuvem com domínio | **10/12** | 7,0 |
 
 > Plano elaborado em 28/09/2026. Atualize os checkboxes conforme as tarefas forem concluídas.
+>
+> **Situação revisada em 24/11/2026** com base no código da `main` (PRs #1 a #9). Itens marcados como feitos foram conferidos no código; itens parciais indicam o que falta.
 
 ---
 
@@ -48,7 +50,7 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 **Dev 1**
 - [ ] Criar o repositório no GitHub, com proteção da branch `main` e fluxo de PR
 - [x] Criar o `docker-compose` de desenvolvimento (Postgres e Redis), para todos usarem Postgres
-- [ ] Customizar o `UserAdmin`: fieldsets com o papel e filtro por papel
+- [x] Customizar o `UserAdmin`: fieldsets com o papel e filtro por papel (feito em 24/11; superusuários passam a ter o papel Administrador)
 
 **Dev 2**
 - [x] Admin de `City`, `Stadium`, `Team` e `Player`: `list_display`, busca e filtros
@@ -75,9 +77,9 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 ### Semana 1 (02–08/10)
 
 **Dev 1**
-- [ ] Login e logout por sessão, com templates. A rota de login deve se chamar `accounts:login` (já configurada em `LOGIN_URL`)
-- [ ] Recuperação de senha com e-mail. O envio já está configurado (`EMAIL_URL`); no desenvolvimento, o e-mail aparece no terminal
-- [ ] Controle de acesso das views: só admin, ou admin e mesário
+- [x] Login e logout por sessão, com templates. A rota de login deve se chamar `accounts:login` (já configurada em `LOGIN_URL`)
+- [x] Recuperação de senha com e-mail. O envio já está configurado (`EMAIL_URL`); no desenvolvimento, o e-mail aparece no terminal
+- [x] Controle de acesso das views: só admin, ou admin e mesário
 
 **Dev 2**
 - [x] Cadastros de times, jogadores, estádios e cidades com ModelForm
@@ -92,16 +94,16 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 **Dev 4**
 - [x] `base.html`: layout, menu e exibição das mensagens
 - [x] Ativar o `django.contrib.humanize`
-- [x] Página inicial pública
-- [x] Lista de jogos e resultados, com filtros por rodada e cidade e paginação
+- [x] Página inicial pública (concluída em 24/11: antes só redirecionava para a lista de jogos)
+- [x] Lista de jogos e resultados, com filtros por rodada e cidade e paginação (filtro de cidade adicionado em 24/11)
 
 ### Semana 2 (09–15/10) — 12/10 é feriado
 
 **Dev 1**
-- [ ] Cadastro de mesários pelo admin
-- [ ] Troca de senha
-- [ ] Painel do mesário com os jogos designados a ele
-- [ ] Testes de permissão
+- [x] Cadastro de mesários pelo admin
+- [x] Troca de senha
+- [x] Painel do mesário com os jogos designados a ele
+- [x] Testes de permissão
 
 **Dev 2**
 - [x] Cadastro de campeonatos
@@ -114,9 +116,9 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [x] Cancelamento de evento
 
 **Dev 4**
-- [ ] Página pública do jogo: escalações, local, horário, timeline e player do streaming
-- [ ] Página do time
-- [ ] Tabela de classificação, lendo os campos atuais de `ChampionshipTeam`
+- [x] Página pública do jogo: escalações, local, horário, timeline e player do streaming (feito em 24/11): player do YouTube incorporado (`youtube-nocookie`); outros links viram botão
+- [x] Página do time (feito em 24/11): campanha, elenco, próximos jogos, resultados e artilheiros do time
+- [x] Tabela de classificação, lendo os campos atuais de `ChampionshipTeam` (feita no detalhe do campeonato; os valores dependem do `recompute_standings`, do Dev 2)
 
 ### Semana 3 (16–20/10) — fechamento
 
@@ -149,8 +151,8 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Testes
 
 **Dev 4**
-- [ ] Consultas das estatísticas: artilharia, assistências e cartões
-- [ ] Página da Central de Estatísticas
+- [x] Consultas das estatísticas: artilharia, assistências e cartões (feito em 24/11): `apps/matches/stats.py`
+- [x] Página da Central de Estatísticas (feito em 24/11): `/matches/stats/`
 
 ### S5 (28/10–03/11) — Tempo real (02/11 é feriado)
 
@@ -168,13 +170,13 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Enviar os eventos só depois de gravados no banco (`transaction.on_commit`)
 
 **Dev 4**
-- [ ] JavaScript da página do jogo: placar e timeline ao vivo, com reconexão automática
-- [ ] Seção "ao vivo agora" na página inicial
+- [x] JavaScript da página do jogo: placar e timeline ao vivo, com reconexão automática (feito em 24/11): `static/js/live.js` consulta `/matches/<id>/live/` (10 s ao vivo, 60 s antes do jogo, para ao encerrar). Já tenta o WebSocket `/ws/matches/<id>/` assim que existir uma rota em `routing.py`: o consumer do Dev 3 só precisa enviar qualquer mensagem quando o jogo mudar
+- [x] Seção "ao vivo agora" na página inicial (feito em 24/11): atualiza sozinha a cada 30 s (`/live-now/`)
 
 ### S6 (04–10/11) — APIs e internacionalização
 
 **Dev 1**
-- [ ] Internacionalização: revisar a tradução dos templates e adicionar o seletor de idioma no layout. A base já está pronta: `LocaleMiddleware`, `/i18n/setlang/` e modelos traduzidos
+- [ ] Internacionalização — **parcial**: seletor de idioma no layout ✅, modelos e telas de jogos, times, campeonatos e página inicial traduzidos ✅. Falta: as telas de senha (`apps/accounts/templates/accounts/password_*`) foram escritas com o texto-fonte em português; reescrever com texto em inglês e traduzir no `.po`, para funcionarem em inglês
 
 **Dev 2**
 - [ ] Endpoints DRF só de leitura para times, campeonatos e classificação
@@ -183,8 +185,8 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Endpoints DRF de jogos, eventos e estatísticas, documentados no Swagger
 
 **Dev 4**
-- [ ] Clima no estádio via Open-Meteo, usando as coordenadas de `Stadium`
-- [ ] Importar os municípios do PI pela API do IBGE (dados de governo)
+- [x] Clima no estádio via Open-Meteo, usando as coordenadas de `Stadium` (feito em 24/11): previsão na hora do jogo, com cache de 30 min; se a API falhar, a previsão some sem quebrar a página
+- [x] Importar os municípios do PI pela API do IBGE (dados de governo) (feito em 24/11): `python manage.py import_ibge_cities [--state PI] [--update-names] [--dry-run]`
 
 ### S7 (11–17/11) — Qualidade
 
@@ -200,8 +202,8 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] Casos de borda: prorrogação, pênaltis, W.O. e evento cancelado durante o jogo
 
 **Dev 4**
-- [ ] Ajustes para celular e responsividade
-- [ ] Revisar o uso do humanize ("há 5 min", números formatados)
+- [x] Ajustes para celular e responsividade (feito em 24/11): páginas públicas conferidas em 390 px de largura
+- [x] Revisar o uso do humanize ("há 5 min", números formatados) (feito em 24/11): `naturalday`, `naturaltime` e `intcomma` (capacidade dos estádios)
 
 ### S8 (18–24/11) — Beta (20/11 é feriado)
 
@@ -221,7 +223,7 @@ Os modelos já estão prontos. Falta registrar e customizar o admin (fieldsets e
 - [ ] **Dev 1:** deploy final e repositório público para a turma
 - [ ] **Dev 2:** slides sobre a modelagem e as regras do campeonato
 - [ ] **Dev 3:** slides sobre a arquitetura e o tempo real
-- [ ] **Dev 4:** roteiro da demonstração
+- [x] **Dev 4:** roteiro da demonstração (feito em 24/11): [`docs/DEMO.md`](DEMO.md)
 - [ ] **Ensaio geral em 08/12** (apresentação de 30 minutos)
 
 ---

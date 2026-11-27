@@ -3,15 +3,22 @@
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import Prefetch, Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from apps.championships.models import Championship
+from apps.championships.selectors import (
+    featured_championship,
+    public_championships,
+)
+from apps.shared.validators import is_uuid
 
-from . import services
+from . import services, stats, weather
 from .forms import (
     CancelEventForm,
     LineupFormSet,
@@ -26,6 +33,7 @@ from .permissions import (
     can_manage_matches,
     can_officiate,
 )
+from .routing import websocket_urlpatterns
 
 # ---------------------------------------------------------------------------
 # Fixtures (calendar)
@@ -71,6 +79,13 @@ class MatchListView(ListView):
         if form.is_valid():
             if championship := form.cleaned_data["championship"]:
                 queryset = queryset.filter(championship=championship)
+            if city := form.cleaned_data["city"]:
+                # Where the match is played: the stadium's city, or the
+                # home team's city while no stadium has been set.
+                queryset = queryset.filter(
+                    Q(stadium__city=city)
+                    | Q(stadium__isnull=True, home_team__team__city=city)
+                )
             if round_number := form.cleaned_data["round"]:
                 queryset = queryset.filter(round_number=round_number)
             if status := form.cleaned_data["status"]:
@@ -201,6 +216,99 @@ class LineupView(MatchOfficialRequiredMixin, TemplateView):
 # Match sheet (events)
 # ---------------------------------------------------------------------------
 
+# Seconds between refreshes of the live regions (score and timeline).
+LIVE_REFRESH_SECONDS = 10
+UPCOMING_REFRESH_SECONDS = 60
+
+
+def timeline_events(match):
+    """Events of the match, most recent first (what matters live)."""
+    return (
+        match.events.select_related(
+            "event_type", "team__team", "recorded_by", "canceled_by"
+        )
+        .prefetch_related(
+            Prefetch(
+                "participants",
+                queryset=MatchEventParticipant.objects.select_related(
+                    "role", "player_registration__player"
+                ),
+            )
+        )
+        .order_by("-period", "-minute", "-stoppage_minute", "-created_at")
+    )
+
+
+def live_context(request, match):
+    """Context of the regions that refresh live (score and timeline)."""
+    return {
+        "match": match,
+        "events": timeline_events(match),
+        "locked": services.is_locked(match),
+        "can_officiate": can_officiate(request.user, match),
+        "cancel_form": CancelEventForm(),
+    }
+
+
+def websocket_enabled():
+    """True once a WebSocket consumer is routed (see routing.py)."""
+    return bool(websocket_urlpatterns)
+
+
+def live_interval(match):
+    """How often the page should refresh; 0 once the sheet is closed."""
+    if services.is_locked(match):
+        return 0
+    if match.is_live:
+        return LIVE_REFRESH_SECONDS
+    return UPCOMING_REFRESH_SECONDS
+
+
+def live_version(match, events):
+    """Changes whenever the score, status or any event changes."""
+    latest = max((e.updated_at for e in events), default=None)
+    return "|".join(
+        [
+            match.updated_at.isoformat(),
+            str(len(events)),
+            latest.isoformat() if latest else "",
+        ]
+    )
+
+
+class MatchLiveView(View):
+    """
+    JSON snapshot of the live regions of a match page, polled by
+    ``static/js/live.js``. Public: it exposes the same data as the page.
+    """
+
+    def get(self, request, pk):
+        match = get_object_or_404(
+            Match.objects.select_related(
+                "championship", "home_team__team", "away_team__team"
+            ),
+            pk=pk,
+        )
+        context = live_context(request, match)
+        events = list(context["events"])
+        context["events"] = events
+        response = JsonResponse(
+            {
+                "version": live_version(match, events),
+                "interval": live_interval(match),
+                "regions": {
+                    "score": render_to_string(
+                        "matches/_live_score.html", context, request
+                    ),
+                    "timeline": render_to_string(
+                        "matches/_timeline.html", context, request
+                    ),
+                },
+            }
+        )
+        response["Cache-Control"] = "no-store"
+        return response
+
 
 class MatchSheetView(MatchOfficialRequiredMixin, TemplateView):
     """
@@ -234,41 +342,25 @@ class MatchSheetView(MatchOfficialRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         match = self.match
         event_type = kwargs.get("event_type", self.get_event_type())
-        # Most recent first: during the match that is what matters.
-        events = (
-            match.events.select_related(
-                "event_type", "team__team", "recorded_by", "canceled_by"
-            )
-            .prefetch_related(
-                Prefetch(
-                    "participants",
-                    queryset=MatchEventParticipant.objects.select_related(
-                        "role", "player_registration__player"
-                    ),
-                )
-            )
-            .order_by("-period", "-minute", "-stoppage_minute", "-created_at")
-        )
         lineups = match.lineups.select_related(
             "player_registration__player"
         ).order_by("role", "shirt_number")
+        context.update(live_context(self.request, match))
         context.update(
-            match=match,
-            events=events,
             home_lineup=[
                 e for e in lineups if e.team_id == match.home_team_id
             ],
             away_lineup=[
                 e for e in lineups if e.team_id == match.away_team_id
             ],
-            locked=services.is_locked(match),
             can_manage=can_manage_matches(self.request.user),
-            can_officiate=can_officiate(self.request.user, match),
+            forecast=weather.match_forecast(match),
+            live_interval=live_interval(match),
+            live_websocket=websocket_enabled(),
             event_types=EventType.objects.filter(is_active=True),
             event_type=event_type,
             event_form=kwargs.get("event_form")
             or self.get_event_form(event_type),
-            cancel_form=CancelEventForm(),
         )
         return context
 
@@ -331,3 +423,41 @@ class EventCancelView(MatchOfficialRequiredMixin, View):
                 _("Event %(event)s canceled.") % {"event": event.event_type},
             )
         return redirect("matches:sheet", pk=self.match.pk)
+
+
+# ---------------------------------------------------------------------------
+# Statistics
+# ---------------------------------------------------------------------------
+
+
+class StatisticsView(TemplateView):
+    """Public rankings: top scorers, assists and disciplinary record."""
+
+    template_name = "matches/statistics.html"
+
+    def get_championship(self):
+        championship_id = self.request.GET.get("championship")
+        if championship_id:
+            championship = (
+                public_championships().filter(pk=championship_id).first()
+                if is_uuid(championship_id)
+                else None
+            )
+            if championship is not None:
+                return championship
+        return featured_championship()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        championship = self.get_championship()
+        context.update(
+            championship=championship,
+            championships=public_championships(),
+        )
+        if championship is not None:
+            context.update(
+                scorers=stats.top_scorers(championship),
+                assists=stats.top_assists(championship),
+                discipline=stats.disciplinary_ranking(championship),
+            )
+        return context

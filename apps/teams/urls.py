@@ -8,6 +8,7 @@ app_name = "teams"
 urlpatterns = [
     path("", views.TeamListView.as_view(), name="team_list"),
     path("new/", views.TeamCreateView.as_view(), name="team_create"),
+    path("<uuid:pk>/", views.TeamDetailView.as_view(), name="team_detail"),
     path(
         "<uuid:pk>/edit/",
         views.TeamUpdateView.as_view(),

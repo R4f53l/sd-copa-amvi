@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from apps.championships.models import Championship
 from apps.shared.forms import BootstrapFormMixin
-from apps.teams.models import Player
+from apps.teams.models import City, Player
 
 from . import services
 from .models import EventType, Lineup, Match, MatchEvent
@@ -18,6 +18,14 @@ class MatchFilterForm(forms.Form):
         required=False,
         empty_label=_("All"),
         widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    city = forms.ModelChoiceField(
+        label=_("City"),
+        queryset=City.objects.order_by("name"),
+        required=False,
+        empty_label=_("All"),
+        widget=forms.Select(attrs={"class": "form-select"}),
+        help_text=_("Where the match is played."),
     )
     round = forms.IntegerField(
         label=_("Round"),
@@ -38,6 +46,7 @@ class MatchFilterForm(forms.Form):
             attrs={"class": "form-control", "placeholder": _("Search…")}
         ),
     )
+
 
 DATETIME_LOCAL_FORMAT = "%Y-%m-%dT%H:%M"
 
